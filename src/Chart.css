@@ -1,0 +1,26 @@
+.chart-row {
+    display: flex;
+}
+
+.chart-stitch {
+    width: 20px;
+    height: 20px;
+    border: 1px solid black;
+}
+
+.chart-stitch-ignore {
+    border: 1px solid #CCC;
+}
+
+.chart-stitch-ignore::before {
+    content: "x";
+    text-align: center;
+    color: #CCCCCC;
+    display: block;
+}
+
+.chart-button {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+}

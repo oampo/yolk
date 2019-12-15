@@ -1,0 +1,19 @@
+.color-palette {
+    display: flex;
+}
+
+.color-palette-color {
+    width: 20px;
+    height: 20px;
+}
+
+.color-palette-color-selected {
+    border: 1px solid black;
+}
+
+.color-palette-color-none::before {
+    content: "x";
+    text-align: center;
+    color: #CCCCCC;
+    display: block;
+}
