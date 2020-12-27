@@ -1,12 +1,11 @@
-import React from "react";
+import React, {useState} from 'react';
 
-export default class YokeView extends React.Component {
-  state = {
-    segments: 15,
-  };
+export default function YokeView(props) {
+  const {chart, colors} = props;
+  const [segments, setSegments] = useState(15);
 
-  createStitch(stitch, stitchIndex, numColumns, rowIndex, numRows) {
-    const segmentAngle = (2 * Math.PI) / this.state.segments;
+  function createStitch(stitch, stitchIndex, numColumns, rowIndex, numRows) {
+    const segmentAngle = (2 * Math.PI) / segments;
     const stitchAngle = segmentAngle / numColumns;
     const stitchStartAngle = stitchIndex * stitchAngle;
     const stitchEndAngle = stitchStartAngle + stitchAngle;
@@ -26,48 +25,46 @@ export default class YokeView extends React.Component {
       <path
         key={stitchIndex}
         d={d}
-        stroke={this.props.colors[stitch.color]}
+        stroke={colors[stitch.color]}
         strokeWidth={strokeWidth}
       />
     );
   }
 
-  createSegment() {
-    return this.props.chart.map((row, rowIndex) =>
+  function createSegment() {
+    return chart.map((row, rowIndex) =>
       row
         .slice()
         .reverse() // RTL
         .filter((stitch) => stitch !== null)
         .map((stitch, columnIndex, row) =>
-          this.createStitch(
+          createStitch(
             stitch,
             columnIndex,
             row.length,
             rowIndex,
-            this.props.chart.length
+            chart.length
           )
         )
     );
   }
 
-  createSegments() {
+  function createSegments() {
     const segments = [];
-    for (let i = 0; i < this.state.segments; i++) {
-      const rotation = (i / this.state.segments) * 360;
+    for (let i = 0; i < segments; i++) {
+      const rotation = (i / segments) * 360;
       segments.push(
         <g key={i} transform={`rotate(${rotation})`}>
-          {this.createSegment()}
+          {createSegment()}
         </g>
       );
     }
     return segments;
   }
 
-  render() {
     return (
       <svg className="yoke-view" viewBox="-1 -1 2 2" width="500" height="500">
-        {this.createSegments()}
+        {createSegments()}
       </svg>
     );
-  }
 }

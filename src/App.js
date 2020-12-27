@@ -1,48 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import ColorPalette from "./ColorPalette";
 import Chart from "./Chart";
 import YokeView from "./YokeView";
 
-export default class App extends React.Component {
-  state = {
-    colors: ["#e0e0e0", "#f4eda1"],
-    selectedColor: 0,
-    chart: [[null]],
-    numRows: 1,
-    numColumns: 1,
-  };
+export default function App(props) {
+  const [colors, setColors] = useState(["#e0e0e0", "#f4eda1"]);
+  const [selectedColor, setSelectedColor] = useState(0);
+  const [chart, setChart] = useState([[null]]);
+  const [numRows, setNumRows] = useState(1);
+  const [numColumns, setNumColumns] = useState(1);
 
-  createRow(length) {
+  function createRow(length) {
     return Array(length).fill(null);
   }
 
-  setRows = (numRows) => {
-    const { chart, numColumns } = this.state;
+  function setRows(numRows) {
     let newChart = [];
     for (let i = 0; i < numRows; i++) {
-      newChart.push(chart.length > i ? chart[i] : this.createRow(numColumns));
+      newChart.push(chart.length > i ? chart[i] : createRow(numColumns));
     }
-    this.setState({
-      numRows,
-      chart: newChart,
-    });
-  };
+    setChart(newChart);
+    setNumRows(numRows);
+  }
 
-  setColumns = (numColumns) => {
-    const newChart = this.state.chart.map((row) =>
+  function setColumns(numColumns) {
+    const newChart = chart.map((row) =>
       row.length > numColumns
         ? row.slice(0, numColumns)
-        : [...row, ...this.createRow(numColumns - row.length)]
+        : [...row, ...createRow(numColumns - row.length)]
     );
 
-    this.setState({
-      numColumns,
-      chart: newChart,
-    });
-  };
+    setChart(newChart);
+    setNumColumns(numColumns);
+  }
 
-  setStitch = (rowIndex, columnIndex) => {
-    const newChart = this.state.chart.map((row, index) => {
+  function setStitch(rowIndex, columnIndex) {
+    const newChart = chart.map((row, index) => {
       if (index !== rowIndex) {
         return row;
       }
@@ -50,63 +43,55 @@ export default class App extends React.Component {
         if (index !== columnIndex) {
           return stitch;
         }
-        if (this.state.selectedColor === null) {
+        if (selectedColor === null) {
           return null;
         }
 
         return {
-          color: this.state.selectedColor,
+          color: selectedColor,
         };
       });
     });
 
-    this.setState({ chart: newChart });
-  };
-
-  selectColor = (selectedColor) => {
-    this.setState({
-      selectedColor,
-    });
-  };
-
-  render() {
-    return (
-      <div className="App">
-        <form>
-          <label htmlFor="rows">Rows</label>
-          <input
-            id="rows"
-            type="number"
-            min="1"
-            value={this.state.numRows}
-            onChange={(e) => this.setRows(Number(e.target.value))}
-          />
-          <label htmlFor="stitches">Stitches</label>
-          <input
-            id="stitches"
-            type="number"
-            min="1"
-            value={this.state.numColumns}
-            onChange={(e) => this.setColumns(Number(e.target.value))}
-          />
-        </form>
-        <ColorPalette
-          colors={this.state.colors}
-          selectedColor={this.state.selectedColor}
-          selectColor={this.selectColor}
-        />
-        <Chart
-          chart={this.state.chart}
-          numRows={this.state.numRows}
-          numColumns={this.state.numColumns}
-          colors={this.state.colors}
-          setRows={this.setRows}
-          setColumns={this.setColumns}
-          setStitch={this.setStitch}
-        />
-
-        <YokeView chart={this.state.chart} colors={this.state.colors} />
-      </div>
-    );
+    setChart(newChart);
   }
+
+  return (
+    <div className="App">
+      <form>
+        <label htmlFor="rows">Rows</label>
+        <input
+          id="rows"
+          type="number"
+          min="1"
+          value={numRows}
+          onChange={(e) => setRows(Number(e.target.value))}
+        />
+        <label htmlFor="stitches">Stitches</label>
+        <input
+          id="stitches"
+          type="number"
+          min="1"
+          value={numColumns}
+          onChange={(e) => setColumns(Number(e.target.value))}
+        />
+      </form>
+      <ColorPalette
+        colors={colors}
+        selectedColor={selectedColor}
+        selectColor={setSelectedColor}
+      />
+      <Chart
+        chart={chart}
+        numRows={numRows}
+        numColumns={numColumns}
+        colors={colors}
+        setRows={setRows}
+        setColumns={setColumns}
+        setStitch={setStitch}
+      />
+
+      <YokeView chart={chart} colors={colors} />
+    </div>
+  );
 }
