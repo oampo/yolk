@@ -1,50 +1,41 @@
-// Wrapping modulo
-function mod(x, y) {
-  return ((x % y) + y) % y;
-}
-
-export function create(length = 50) {
+export function create() {
   return {
-    array: Array(length).fill(),
-    end: 0,
-    length: 0,
+    array: [],
+    position: 0,
   };
 }
 
 export function push(history, item) {
-  const end = (history.end + 1) % history.array.length;
-  const array = history.array.map((x, index) =>
-    index === history.end ? item : x
-  );
-  const length = history.length + 1;
+  const array = [...history.array.slice(0, history.position), item];
+  const position = array.length;
   return {
     array,
-    end,
-    length,
+    position,
   };
 }
 
 export function pop(history) {
-  if (history.length === 0) {
+  if (history.position === 0) {
     return [null, history];
   }
 
-  const end = mod(history.end - 1, history.array.length);
-  const value = history.array[end];
-  const length = history.length - 1;
+  const value = history.array[history.position - 1];
+  const position = history.position - 1;
   return [
     value,
     {
       array: history.array,
-      end,
-      length,
+      position
     },
   ];
 }
 
 export function peek(history) {
-  const index = mod(history.end - 1, history.array.length);
-  return history[index];
+  if (history.position === 0) {
+    return null;
+  }
+
+  return history[history.position - 1];
 }
 
 export const RESIZE = "RESIZE";
@@ -92,6 +83,6 @@ export function deleteColor(id, color) {
   return {
     type: DELETE_COLOR,
     id,
-    color
+    color,
   };
 }
