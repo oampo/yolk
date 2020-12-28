@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ColorPalette from "./ColorPalette";
 import Chart from "./Chart";
 import YokeView from "./YokeView";
+import * as history from "./history";
 
 export default function App(props) {
   const [colors, setColors] = useState({ 0: "#e0e0e0", 1: "#f4eda1" });
@@ -11,30 +12,32 @@ export default function App(props) {
   const [numRows, setNumRows] = useState(1);
   const [numColumns, setNumColumns] = useState(1);
   const [numRepeats, setNumRepeats] = useState(16);
+  const [undoHistory, setUndoHistory] = useState(history.create());
 
-  function createRow(length) {
-    return Array(length).fill(null);
-  }
-
-  function setRows(numRows) {
-    let newChart = [];
-    for (let i = 0; i < numRows; i++) {
-      newChart.push(chart.length > i ? chart[i] : createRow(numColumns));
+  const setSize = useCallback((rows, columns, addToHistory = true) => {
+    const newChart = [];
+    for (let i = 0; i < rows; i++) {
+      newChart.push([]);
+      for (let j = 0; j < columns; j++) {
+        if (i < chart.length && j < chart[i].length) {
+          newChart[i].push(chart[i][j]);
+        } else {
+          newChart[i].push(null);
+        }
+      }
     }
     setChart(newChart);
-    setNumRows(numRows);
-  }
-
-  function setColumns(numColumns) {
-    const newChart = chart.map((row) =>
-      row.length > numColumns
-        ? row.slice(0, numColumns)
-        : [...row, ...createRow(numColumns - row.length)]
-    );
-
-    setChart(newChart);
-    setNumColumns(numColumns);
-  }
+    setNumRows(rows);
+    setNumColumns(columns);
+    if (addToHistory) {
+      setUndoHistory(
+        history.push(
+          undoHistory,
+          history.resize(numRows, numColumns, rows, columns)
+        )
+      );
+    }
+  }, [chart, numColumns, numRows, undoHistory]);
 
   function setStitch(rowIndex, columnIndex) {
     const newChart = chart.map((row, index) => {
@@ -66,9 +69,9 @@ export default function App(props) {
   }
 
   function addColor() {
-    let newColors = {...colors};
+    let newColors = { ...colors };
     newColors[nextColorId] = "#FFFFFF";
-//    setColors({ ...colors, [nextColorId]: "#FFFFFF" });
+    //    setColors({ ...colors, [nextColorId]: "#FFFFFF" });
     setColors(newColors);
     setSelectedColor(nextColorId);
     setNextColorId(nextColorId + 1);
@@ -82,6 +85,32 @@ export default function App(props) {
     }
   }
 
+  const undo = useCallback(() => {
+    const [action, newHistory] = history.pop(undoHistory);
+    if (!action) {
+      return;
+    }
+    switch (action.type) {
+      case history.RESIZE: {
+        setSize(action.fromRows, action.fromColumns, false);
+        break;
+      }
+      default:
+        break;
+    }
+    setUndoHistory(newHistory);
+  }, [setSize, undoHistory]);
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === "z") {
+        undo();
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [undo]);
+
   return (
     <div className="App">
       <form>
@@ -91,7 +120,7 @@ export default function App(props) {
           type="number"
           min="1"
           value={numRows}
-          onChange={(e) => setRows(Number(e.target.value))}
+          onChange={(e) => setSize(Number(e.target.value), numColumns)}
         />
         <label htmlFor="stitches">Stitches</label>
         <input
@@ -99,7 +128,7 @@ export default function App(props) {
           type="number"
           min="1"
           value={numColumns}
-          onChange={(e) => setColumns(Number(e.target.value))}
+          onChange={(e) => setSize(numRows, Number(e.target.value))}
         />
         <label htmlFor="repeats">Repeats</label>
         <input
@@ -123,8 +152,6 @@ export default function App(props) {
         numRows={numRows}
         numColumns={numColumns}
         colors={colors}
-        setRows={setRows}
-        setColumns={setColumns}
         setStitch={setStitch}
       />
 
