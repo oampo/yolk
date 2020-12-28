@@ -107,7 +107,7 @@ export default function App(props) {
       }
       return nextColorId;
     },
-    [colors, nextColorId]
+    [colors, nextColorId, undoHistory]
   );
 
   const deleteColor = useCallback(
@@ -122,7 +122,7 @@ export default function App(props) {
         );
       }
     },
-    [colors, selectedColor]
+    [colors, selectedColor, undoHistory]
   );
 
   const undo = useCallback(() => {
@@ -157,7 +157,7 @@ export default function App(props) {
         break;
     }
     setUndoHistory(newHistory);
-  }, [setSize, undoHistory, setStitch, setColor]);
+  }, [setSize, undoHistory, setStitch, setColor, colors]);
 
   useEffect(() => {
     function handleKeyDown(event) {
