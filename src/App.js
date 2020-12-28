@@ -56,6 +56,15 @@ export default function App(props) {
     setChart(newChart);
   }
 
+  function setColor(index, newColor) {
+    setColors(colors.map((color, i) => (index === i ? newColor : color)));
+  }
+
+  function addColor() {
+    setColors([...colors, "#000000"]);
+    setSelectedColor(colors.length);
+  }
+
   return (
     <div className="App">
       <form>
@@ -80,6 +89,8 @@ export default function App(props) {
         colors={colors}
         selectedColor={selectedColor}
         selectColor={setSelectedColor}
+        setColor={setColor}
+        addColor={addColor}
       />
       <Chart
         chart={chart}

@@ -1,19 +1,16 @@
-.color-palette {
-  display: flex;
-}
-
-.color-palette-color {
-  width: 20px;
-  height: 20px;
-}
-
-.color-palette-color-selected {
-  border: 1px solid black;
-}
-
-.color-palette-color-none::before {
-  content: "x";
+.toolbar-button {
+  width: 75px;
+  height: 75px;
+  line-height: 75px;
+  vertical-align: middle;
   text-align: center;
-  color: #cccccc;
-  display: block;
+}
+
+.color-palette-color-none,
+.color-palette-add {
+  font-size: 40px;
+}
+
+.color-palette-color-none {
+  color: #CCCCCC;
 }

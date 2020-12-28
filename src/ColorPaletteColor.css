@@ -1,0 +1,46 @@
+.color-palette-color-wrapper {
+  position: relative;
+}
+
+.color-palette-color {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.color-palette-color-controls {
+  display: flex;
+  flex-direction: column;
+}
+
+.color-palette-color-control {
+  flex: 1;
+}
+
+.color-palette-color-selected {
+  border: 4px solid black;
+}
+
+.chrome-picker {
+  box-shadow: none !important;
+}
+
+.color-palette-color-picker-tooltip {
+  position: absolute;
+  left: 87px;
+  top: 0px;
+  background-color: #d0d0d0;
+  padding: 10px;
+  z-index: 1;
+}
+
+.color-palette-color-picker-tooltip:after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-width: 12px;
+  border-style: solid;
+  border-color: transparent #d0d0d0 transparent transparent;
+  top: 0px;
+  left: -24px;
+}
