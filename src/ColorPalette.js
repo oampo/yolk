@@ -6,13 +6,26 @@ import ColorPaletteColor from "./ColorPaletteColor";
 import "./ColorPalette.css";
 
 export default function ColorPalette(props) {
-  const { colors, selectedColor, selectColor, setColor, addColor } = props;
+  const {
+    colors,
+    selectedColor,
+    selectColor,
+    setColor,
+    addColor,
+    deleteColor,
+  } = props;
 
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+
+  function addColorAndEdit() {
+    const id = addColor();
+    console.log(id);
+    setEditingId(id);
+  }
 
   useEffect(() => {
     function hideColorPicker(e) {
-      if (editingIndex === null) {
+      if (editingId === null) {
         return;
       }
 
@@ -20,12 +33,12 @@ export default function ColorPalette(props) {
         return;
       }
 
-      setEditingIndex(null);
+      setEditingId(null);
     }
 
     document.addEventListener("click", hideColorPicker);
     return () => document.removeEventListener("click", hideColorPicker);
-  }, [editingIndex]);
+  }, [editingId]);
 
   function renderNone() {
     let classes = "toolbar-button color-palette-color-none";
@@ -39,24 +52,33 @@ export default function ColorPalette(props) {
     );
   }
 
-  const colorButtons = colors.map((color, index) => (
-    <ColorPaletteColor
-      key={index}
-      color={color}
-      selectColor={selectColor}
-      setColor={setColor}
-      setEditing={setEditingIndex}
-      isSelected={index === selectedColor}
-      isEditing={index === editingIndex}
-      index={index}
-    />
-  ));
+  const colorButtons = Object.entries(colors)
+    .filter(([_, color]) => color !== null)
+    .map(([stringId, color]) => {
+      const id = Number(stringId);
+      return (
+        <ColorPaletteColor
+          key={id}
+          color={color}
+          selectColor={selectColor}
+          setColor={setColor}
+          setEditing={setEditingId}
+          deleteColor={deleteColor}
+          isSelected={id === selectedColor}
+          isEditing={id === editingId}
+          id={id}
+        />
+      );
+    });
 
   return (
     <div className="color-palette">
       {renderNone()}
       {colorButtons}
-      <div className="toolbar-button color-palette-add" onClick={addColor}>
+      <div
+        className="toolbar-button color-palette-add"
+        onClick={addColorAndEdit}
+      >
         <FontAwesomeIcon icon={faPlus} />
       </div>
     </div>

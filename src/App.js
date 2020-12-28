@@ -4,11 +4,13 @@ import Chart from "./Chart";
 import YokeView from "./YokeView";
 
 export default function App(props) {
-  const [colors, setColors] = useState(["#e0e0e0", "#f4eda1"]);
+  const [colors, setColors] = useState({ 0: "#e0e0e0", 1: "#f4eda1" });
   const [selectedColor, setSelectedColor] = useState(0);
+  const [nextColorId, setNextColorId] = useState(2);
   const [chart, setChart] = useState([[null]]);
   const [numRows, setNumRows] = useState(1);
   const [numColumns, setNumColumns] = useState(1);
+  const [numRepeats, setNumRepeats] = useState(16);
 
   function createRow(length) {
     return Array(length).fill(null);
@@ -56,13 +58,28 @@ export default function App(props) {
     setChart(newChart);
   }
 
-  function setColor(index, newColor) {
-    setColors(colors.map((color, i) => (index === i ? newColor : color)));
+  function setColor(id, newColor) {
+    setColors({
+      ...colors,
+      [id]: newColor,
+    });
   }
 
   function addColor() {
-    setColors([...colors, "#000000"]);
-    setSelectedColor(colors.length);
+    let newColors = {...colors};
+    newColors[nextColorId] = "#FFFFFF";
+//    setColors({ ...colors, [nextColorId]: "#FFFFFF" });
+    setColors(newColors);
+    setSelectedColor(nextColorId);
+    setNextColorId(nextColorId + 1);
+    return nextColorId;
+  }
+
+  function deleteColor(id) {
+    setColors({ ...colors, [id]: null });
+    if (selectedColor === id) {
+      setSelectedColor(null);
+    }
   }
 
   return (
@@ -84,6 +101,14 @@ export default function App(props) {
           value={numColumns}
           onChange={(e) => setColumns(Number(e.target.value))}
         />
+        <label htmlFor="repeats">Repeats</label>
+        <input
+          id="repeats"
+          type="number"
+          min="3"
+          value={numRepeats}
+          onChange={(e) => setNumRepeats(Number(e.target.value))}
+        />
       </form>
       <ColorPalette
         colors={colors}
@@ -91,6 +116,7 @@ export default function App(props) {
         selectColor={setSelectedColor}
         setColor={setColor}
         addColor={addColor}
+        deleteColor={deleteColor}
       />
       <Chart
         chart={chart}
@@ -102,7 +128,7 @@ export default function App(props) {
         setStitch={setStitch}
       />
 
-      <YokeView chart={chart} colors={colors} />
+      <YokeView chart={chart} colors={colors} numRepeats={numRepeats} />
     </div>
   );
 }

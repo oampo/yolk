@@ -1,11 +1,10 @@
 import React, {useState} from 'react';
 
 export default function YokeView(props) {
-  const {chart, colors} = props;
-  const [numSegments, setNumSegments] = useState(15);
+  const {chart, colors, numRepeats} = props;
 
   function createStitch(stitch, stitchIndex, numColumns, rowIndex, numRows) {
-    const segmentAngle = (2 * Math.PI) / numSegments;
+    const segmentAngle = (2 * Math.PI) / numRepeats;
     const stitchAngle = segmentAngle / numColumns;
     const stitchStartAngle = stitchIndex * stitchAngle;
     const stitchEndAngle = stitchStartAngle + stitchAngle;
@@ -36,7 +35,7 @@ export default function YokeView(props) {
       row
         .slice()
         .reverse() // RTL
-        .filter((stitch) => stitch !== null)
+        .filter((stitch) => stitch !== null && colors[stitch.color] !== null)
         .map((stitch, columnIndex, row) =>
           createStitch(
             stitch,
@@ -51,8 +50,8 @@ export default function YokeView(props) {
 
   function createSegments() {
     const segments = [];
-    for (let i = 0; i < numSegments; i++) {
-      const rotation = (i / numSegments) * 360;
+    for (let i = 0; i < numRepeats; i++) {
+      const rotation = (i / numRepeats) * 360;
       segments.push(
         <g key={i} transform={`rotate(${rotation})`}>
           {createSegment()}

@@ -9,15 +9,16 @@ export default function ColorPaletteColor(props) {
   const {
     color,
     isSelected,
-    index,
+    id,
     selectColor,
     setColor,
+    deleteColor,
     isEditing,
     setEditing,
   } = props;
 
   function updateColor(color) {
-    setColor(index, color.hex);
+    setColor(id, color.hex);
   }
 
   return (
@@ -27,7 +28,7 @@ export default function ColorPaletteColor(props) {
           isSelected ? "color-palette-color-selected" : ""
         }`}
         style={{ backgroundColor: color }}
-        onClick={() => selectColor(index)}
+        onClick={() => selectColor(id)}
       >
         <div className="color-palette-color-controls">
           <button
@@ -35,12 +36,19 @@ export default function ColorPaletteColor(props) {
             onClick={(e) => {
               // Don't select the color when we choose to edit it
               e.stopPropagation();
-              setEditing(isEditing ? null : index);
+              setEditing(isEditing ? null : id);
             }}
           >
             <FontAwesomeIcon icon={faPalette} />
           </button>
-          <button className="color-palette-color-control color-palette-color-delete">
+          <button
+            className="color-palette-color-control color-palette-color-delete"
+            onClick={(e) => {
+              // Don't select the color when we choose to edit it
+              e.stopPropagation();
+              deleteColor(id);
+            }}
+          >
             <FontAwesomeIcon icon={faTrash} />
           </button>
         </div>

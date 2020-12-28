@@ -21,7 +21,7 @@ export default function Chart(props) {
 
   const rows = props.chart.map((row, rowIndex) => {
     const stitches = row.map((stitch, columnIndex) => {
-      if (!stitch) {
+      if (!stitch || colors[stitch.color] === null) {
         return (
           <div
             key={columnIndex}
