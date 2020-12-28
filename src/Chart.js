@@ -19,7 +19,7 @@ export default function Chart(props) {
     setStitch(rowIndex, columnIndex);
   }
 
-  const rows = props.chart.map((row, rowIndex) => {
+  const rows = chart.map((row, rowIndex) => {
     const stitches = row.map((stitch, columnIndex) => {
       if (stitch === null || colors[stitch] === null) {
         return (

@@ -17,9 +17,9 @@ export default function ColorPalette(props) {
 
   const [editingId, setEditingId] = useState(null);
 
-  function addColorAndEdit() {
+  function addColorAndEdit(e) {
+    e.stopPropagation();
     const id = addColor();
-    console.log(id);
     setEditingId(id);
   }
 

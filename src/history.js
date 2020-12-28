@@ -68,3 +68,30 @@ export function setStitch(row, column, fromColor, toColor) {
     toColor,
   };
 }
+
+export const SET_COLOR = "SET_COLOR";
+export function setColor(id, fromColor, toColor) {
+  return {
+    type: SET_COLOR,
+    id,
+    fromColor,
+    toColor,
+  };
+}
+
+export const ADD_COLOR = "ADD_COLOR";
+export function addColor(id) {
+  return {
+    type: ADD_COLOR,
+    id,
+  };
+}
+
+export const DELETE_COLOR = "DELETE_COLOR";
+export function deleteColor(id, color) {
+  return {
+    type: DELETE_COLOR,
+    id,
+    color
+  };
+}

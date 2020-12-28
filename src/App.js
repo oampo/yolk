@@ -42,63 +42,88 @@ export default function App(props) {
     [chart, numColumns, numRows, undoHistory]
   );
 
-  function setStitch(rowIndex, columnIndex, colorId=selectedColor, addToHistory = true) {
-    const newChart = chart.map((row, index) => {
-      if (index !== rowIndex) {
-        return row;
-      }
-      return row.map((stitch, index) => {
-        if (index !== columnIndex) {
-          return stitch;
+  const setStitch = useCallback(
+    (rowIndex, columnIndex, colorId = selectedColor, addToHistory = true) => {
+      const newChart = chart.map((row, index) => {
+        if (index !== rowIndex) {
+          return row;
         }
-        if (colorId === null) {
-          return null;
-        }
+        return row.map((stitch, index) => {
+          if (index !== columnIndex) {
+            return stitch;
+          }
+          if (colorId === null) {
+            return null;
+          }
 
-        return colorId;
+          return colorId;
+        });
       });
-    });
 
-    setChart(newChart);
+      setChart(newChart);
 
-    if (addToHistory) {
-      setUndoHistory(
-        history.push(
-          undoHistory,
-          history.setStitch(
-            rowIndex,
-            columnIndex,
-            chart[rowIndex][columnIndex],
-            selectedColor
+      if (addToHistory) {
+        setUndoHistory(
+          history.push(
+            undoHistory,
+            history.setStitch(
+              rowIndex,
+              columnIndex,
+              chart[rowIndex][columnIndex],
+              selectedColor
+            )
           )
-        )
-      );
-    }
-  }
+        );
+      }
+    },
+    [chart, selectedColor, undoHistory]
+  );
 
-  function setColor(id, newColor) {
-    setColors({
-      ...colors,
-      [id]: newColor,
-    });
-  }
+  const setColor = useCallback(
+    (id, newColor, addToHistory = true) => {
+      setColors({
+        ...colors,
+        [id]: newColor,
+      });
 
-  function addColor() {
-    let newColors = { ...colors };
-    newColors[nextColorId] = "#FFFFFF";
-    //    setColors({ ...colors, [nextColorId]: "#FFFFFF" });
-    setColors(newColors);
-    setSelectedColor(nextColorId);
-    setNextColorId(nextColorId + 1);
-    return nextColorId;
-  }
+      if (addToHistory) {
+        setUndoHistory(
+          history.push(undoHistory, history.setColor(id, colors[id], newColor))
+        );
+      }
+    },
+    [colors, undoHistory]
+  );
 
-  function deleteColor(id) {
-    setColors({ ...colors, [id]: null });
-    if (selectedColor === id) {
-      setSelectedColor(null);
-    }
-  }
+  const addColor = useCallback(
+    (addToHistory = true) => {
+      setColors({ ...colors, [nextColorId]: "#FFFFFF" });
+      setSelectedColor(nextColorId);
+      setNextColorId(nextColorId + 1);
+      if (addToHistory) {
+        setUndoHistory(
+          history.push(undoHistory, history.addColor(nextColorId))
+        );
+      }
+      return nextColorId;
+    },
+    [colors, nextColorId]
+  );
+
+  const deleteColor = useCallback(
+    (id, addToHistory = true) => {
+      setColors({ ...colors, [id]: null });
+      if (selectedColor === id) {
+        setSelectedColor(null);
+      }
+      if (addToHistory) {
+        setUndoHistory(
+          history.push(undoHistory, history.deleteColor(id, colors[id]))
+        );
+      }
+    },
+    [colors, selectedColor]
+  );
 
   const undo = useCallback(() => {
     const [action, newHistory] = history.pop(undoHistory);
@@ -111,15 +136,28 @@ export default function App(props) {
         break;
       }
       case history.SET_STITCH: {
-        console.log(action);
         setStitch(action.row, action.column, action.fromColor, false);
+        break;
+      }
+      case history.SET_COLOR: {
+        setColor(action.id, action.fromColor, false);
+        break;
+      }
+      case history.ADD_COLOR: {
+        const { [action.id]: found, ...rest } = colors;
+        setColors(rest);
+        setNextColorId(action.id);
+        break;
+      }
+      case history.DELETE_COLOR: {
+        setColors({ ...colors, [action.id]: action.color });
         break;
       }
       default:
         break;
     }
     setUndoHistory(newHistory);
-  }, [setSize, undoHistory]);
+  }, [setSize, undoHistory, setStitch, setColor]);
 
   useEffect(() => {
     function handleKeyDown(event) {
