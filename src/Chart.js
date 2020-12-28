@@ -21,7 +21,7 @@ export default function Chart(props) {
 
   const rows = props.chart.map((row, rowIndex) => {
     const stitches = row.map((stitch, columnIndex) => {
-      if (!stitch || colors[stitch.color] === null) {
+      if (stitch === null || colors[stitch] === null) {
         return (
           <div
             key={columnIndex}
@@ -33,7 +33,7 @@ export default function Chart(props) {
       }
 
       const style = {
-        backgroundColor: colors[stitch.color],
+        backgroundColor: colors[stitch],
       };
       return (
         <div

@@ -14,32 +14,35 @@ export default function App(props) {
   const [numRepeats, setNumRepeats] = useState(16);
   const [undoHistory, setUndoHistory] = useState(history.create());
 
-  const setSize = useCallback((rows, columns, addToHistory = true) => {
-    const newChart = [];
-    for (let i = 0; i < rows; i++) {
-      newChart.push([]);
-      for (let j = 0; j < columns; j++) {
-        if (i < chart.length && j < chart[i].length) {
-          newChart[i].push(chart[i][j]);
-        } else {
-          newChart[i].push(null);
+  const setSize = useCallback(
+    (rows, columns, addToHistory = true) => {
+      const newChart = [];
+      for (let i = 0; i < rows; i++) {
+        newChart.push([]);
+        for (let j = 0; j < columns; j++) {
+          if (i < chart.length && j < chart[i].length) {
+            newChart[i].push(chart[i][j]);
+          } else {
+            newChart[i].push(null);
+          }
         }
       }
-    }
-    setChart(newChart);
-    setNumRows(rows);
-    setNumColumns(columns);
-    if (addToHistory) {
-      setUndoHistory(
-        history.push(
-          undoHistory,
-          history.resize(numRows, numColumns, rows, columns)
-        )
-      );
-    }
-  }, [chart, numColumns, numRows, undoHistory]);
+      setChart(newChart);
+      setNumRows(rows);
+      setNumColumns(columns);
+      if (addToHistory) {
+        setUndoHistory(
+          history.push(
+            undoHistory,
+            history.resize(numRows, numColumns, rows, columns)
+          )
+        );
+      }
+    },
+    [chart, numColumns, numRows, undoHistory]
+  );
 
-  function setStitch(rowIndex, columnIndex) {
+  function setStitch(rowIndex, columnIndex, colorId=selectedColor, addToHistory = true) {
     const newChart = chart.map((row, index) => {
       if (index !== rowIndex) {
         return row;
@@ -48,17 +51,29 @@ export default function App(props) {
         if (index !== columnIndex) {
           return stitch;
         }
-        if (selectedColor === null) {
+        if (colorId === null) {
           return null;
         }
 
-        return {
-          color: selectedColor,
-        };
+        return colorId;
       });
     });
 
     setChart(newChart);
+
+    if (addToHistory) {
+      setUndoHistory(
+        history.push(
+          undoHistory,
+          history.setStitch(
+            rowIndex,
+            columnIndex,
+            chart[rowIndex][columnIndex],
+            selectedColor
+          )
+        )
+      );
+    }
   }
 
   function setColor(id, newColor) {
@@ -93,6 +108,11 @@ export default function App(props) {
     switch (action.type) {
       case history.RESIZE: {
         setSize(action.fromRows, action.fromColumns, false);
+        break;
+      }
+      case history.SET_STITCH: {
+        console.log(action);
+        setStitch(action.row, action.column, action.fromColor, false);
         break;
       }
       default:

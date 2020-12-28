@@ -24,7 +24,7 @@ export default function YokeView(props) {
       <path
         key={stitchIndex}
         d={d}
-        stroke={colors[stitch.color]}
+        stroke={colors[stitch]}
         strokeWidth={strokeWidth}
       />
     );
@@ -35,7 +35,7 @@ export default function YokeView(props) {
       row
         .slice()
         .reverse() // RTL
-        .filter((stitch) => stitch !== null && colors[stitch.color] !== null)
+        .filter((stitch) => stitch !== null && colors[stitch] !== null)
         .map((stitch, columnIndex, row) =>
           createStitch(
             stitch,
