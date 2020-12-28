@@ -159,10 +159,47 @@ export default function App(props) {
     setUndoHistory(newHistory);
   }, [setSize, undoHistory, setStitch, setColor, colors]);
 
+  const redo = useCallback(() => {
+    const [action, newHistory] = history.advance(undoHistory);
+    if (!action) {
+      return;
+    }
+    switch (action.type) {
+      case history.RESIZE: {
+        setSize(action.toRows, action.toColumns, false);
+        break;
+      }
+      case history.SET_STITCH: {
+        setStitch(action.row, action.column, action.toColor, false);
+        break;
+      }
+      case history.SET_COLOR: {
+        setColor(action.id, action.toColor, false);
+        break;
+      }
+      case history.ADD_COLOR: {
+        addColor(false);
+        break;
+      }
+      case history.DELETE_COLOR: {
+        deleteColor(action.id, false);
+        break;
+      }
+      default:
+        break;
+    }
+
+    setUndoHistory(newHistory);
+  }, [setSize, undoHistory, setStitch, setColor, colors]);
+
   useEffect(() => {
     function handleKeyDown(event) {
-      if ((event.ctrlKey || event.metaKey) && event.key === "z") {
-        undo();
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+        if (event.shiftKey) {
+          redo();
+        } else {
+          undo();
+        }
       }
     }
     document.addEventListener("keydown", handleKeyDown);

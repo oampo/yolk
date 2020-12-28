@@ -25,7 +25,7 @@ export function pop(history) {
     value,
     {
       array: history.array,
-      position
+      position,
     },
   ];
 }
@@ -36,6 +36,15 @@ export function peek(history) {
   }
 
   return history[history.position - 1];
+}
+
+export function advance(history) {
+  if (history.postion === history.array.length) {
+    return [null, history];
+  }
+  const value = history.array[history.position];
+  const position = history.position + 1;
+  return [value, { array: history.array, position }];
 }
 
 export const RESIZE = "RESIZE";
