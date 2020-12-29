@@ -5,13 +5,56 @@ export function create() {
   };
 }
 
-export function push(history, item) {
-  const array = [...history.array.slice(0, history.position), item];
-  const position = array.length;
+// Add an action to the top of the undo stack
+function add(history, action) {
+  const array = [...history.array, action];
   return {
+    ...history,
     array,
-    position,
   };
+}
+
+// Replace the item on top of the undo stack
+function replace(history, action) {
+  const array = [...history.array.slice(0, history.array.length - 1), action];
+  return {
+    ...history,
+    array,
+  };
+}
+
+// Try to merge an actions into the action at the top of the undo stack
+// If we can't merge it, add it to the end of the history
+function mergeOrAdd(history, action) {
+  if (history.position === 0) {
+    // Nothing to merge the new action into
+    return add(history, action);
+  }
+
+  const last = peek(history);
+  if (last.type !== action.type) {
+    // We can only merge if the actions are the same
+    return add(history, action);
+  }
+
+  switch (action.type) {
+    case RESIZE: {
+      return replace(history, { ...last, toChart: action.toChart });
+    }
+    case SET_COLOR: {
+      return replace(history, { ...last, toColor: action.toColor });
+    }
+    default:
+      return add(history, action);
+  }
+}
+
+export function push(history, action) {
+  // Remove the undo history ahead of this point - our histories have diverged
+  const array = history.array.slice(0, history.position);
+  const newHistory = mergeOrAdd({...history, array}, action);
+  newHistory.position = newHistory.array.length;
+  return newHistory;
 }
 
 export function pop(history) {
@@ -35,7 +78,7 @@ export function peek(history) {
     return null;
   }
 
-  return history[history.position - 1];
+  return history.array[history.position - 1];
 }
 
 export function advance(history) {
