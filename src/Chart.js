@@ -1,11 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Chart.css";
 
 export default function Chart(props) {
-  const { chart, colors, setStitch } = props;
+  const { chart, colors, selectedColor, setStitch, onDrawingEnd } = props;
+
+  const [drawing, setDrawing] = useState(false);
+  const [currentStitches, setCurrentStitches] = useState([]);
 
   function handleClick(e, rowIndex, columnIndex) {
+    e.preventDefault();
     setStitch(rowIndex, columnIndex);
+    setDrawing(true);
+    setCurrentStitches([
+      {
+        row: rowIndex,
+        column: columnIndex,
+        fromColor: chart[rowIndex][columnIndex],
+        toColor: selectedColor,
+      },
+    ]);
   }
 
   function handleMouseOver(e, rowIndex, columnIndex) {
@@ -16,8 +29,29 @@ export default function Chart(props) {
       return;
     }
 
+    setDrawing(true);
     setStitch(rowIndex, columnIndex);
+    setCurrentStitches([...currentStitches, {
+        row: rowIndex,
+        column: columnIndex,
+        fromColor: chart[rowIndex][columnIndex],
+        toColor: selectedColor,
+    }]);
   }
+
+  useEffect(() => {
+    if (!drawing) {
+      return;
+    }
+
+    function onMouseUp() {
+      setDrawing(false);
+      onDrawingEnd(currentStitches);
+      setCurrentStitches([]);
+    }
+    document.addEventListener("mouseup", onMouseUp);
+    return () => document.removeEventListener("mouseup", onMouseUp);
+  }, [drawing, currentStitches, onDrawingEnd]);
 
   const rows = chart.map((row, rowIndex) => {
     const stitches = row.map((stitch, columnIndex) => {

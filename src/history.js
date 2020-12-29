@@ -42,17 +42,21 @@ function mergeOrAdd(history, action) {
       return replace(history, { ...last, toChart: action.toChart });
     }
     case SET_COLOR: {
-      return replace(history, { ...last, toColor: action.toColor });
+      if (action.id === last.id) {
+        return replace(history, { ...last, toColor: action.toColor });
+      }
+      break;
     }
     default:
       return add(history, action);
   }
+  return add(history, action);
 }
 
 export function push(history, action) {
   // Remove the undo history ahead of this point - our histories have diverged
   const array = history.array.slice(0, history.position);
-  const newHistory = mergeOrAdd({...history, array}, action);
+  const newHistory = mergeOrAdd({ ...history, array }, action);
   newHistory.position = newHistory.array.length;
   return newHistory;
 }
@@ -99,14 +103,11 @@ export function resize(fromChart, toChart) {
   };
 }
 
-export const SET_STITCH = "SET_STITCH";
-export function setStitch(row, column, fromColor, toColor) {
+export const SET_STITCHES = "SET_STITCHES";
+export function setStitches(stitches) {
   return {
-    type: SET_STITCH,
-    row,
-    column,
-    fromColor,
-    toColor,
+    type: SET_STITCHES,
+    stitches,
   };
 }
 

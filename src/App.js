@@ -28,52 +28,47 @@ export default function App(props) {
       setChart(newChart);
       if (addToHistory) {
         setUndoHistory(
-          history.push(
-            undoHistory,
-            history.resize(chart, newChart)
-          )
+          history.push(undoHistory, history.resize(chart, newChart))
         );
       }
     },
     [chart, undoHistory]
   );
 
-  const setStitch = useCallback(
-    (rowIndex, columnIndex, colorId = selectedColor, addToHistory = true) => {
-      const newChart = chart.map((row, index) => {
-        if (index !== rowIndex) {
-          return row;
-        }
-        return row.map((stitch, index) => {
-          if (index !== columnIndex) {
-            return stitch;
-          }
-          if (colorId === null) {
-            return null;
-          }
-
-          return colorId;
-        });
-      });
-
-      setChart(newChart);
-
-      if (addToHistory) {
-        setUndoHistory(
-          history.push(
-            undoHistory,
-            history.setStitch(
-              rowIndex,
-              columnIndex,
-              chart[rowIndex][columnIndex],
-              selectedColor
-            )
-          )
-        );
+  function setStitch(rowIndex, columnIndex, colorId = selectedColor) {
+    const newChart = chart.map((row, index) => {
+      if (index !== rowIndex) {
+        return row;
       }
+      return row.map((stitch, index) => {
+        if (index !== columnIndex) {
+          return stitch;
+        }
+        if (colorId === null) {
+          return null;
+        }
+
+        return colorId;
+      });
+    });
+
+    setChart(newChart);
+  }
+
+  const setStitches = useCallback(
+    (stitches) => {
+      const newChart = chart.map((row) => [...row]);
+      stitches.forEach((stitch) => {
+        newChart[stitch.row][stitch.column] = stitch.color;
+      });
+      setChart(newChart);
     },
-    [chart, selectedColor, undoHistory]
+    [chart]
   );
+
+  function addStitchesToHistory(stitches) {
+    setUndoHistory(history.push(undoHistory, history.setStitches(stitches)));
+  }
 
   const setColor = useCallback(
     (id, newColor, addToHistory = true) => {
@@ -131,8 +126,16 @@ export default function App(props) {
         setChart(action.fromChart);
         break;
       }
-      case history.SET_STITCH: {
-        setStitch(action.row, action.column, action.fromColor, false);
+      case history.SET_STITCHES: {
+        setStitches(
+          action.stitches
+            .map((stitch) => ({
+              row: stitch.row,
+              column: stitch.column,
+              color: stitch.fromColor,
+            }))
+            .reverse()
+        );
         break;
       }
       case history.SET_COLOR: {
@@ -153,7 +156,7 @@ export default function App(props) {
         break;
     }
     setUndoHistory(newHistory);
-  }, [setSize, undoHistory, setStitch, setColor, colors]);
+  }, [undoHistory, setStitches, setColor, colors]);
 
   const redo = useCallback(() => {
     const [action, newHistory] = history.advance(undoHistory);
@@ -165,8 +168,14 @@ export default function App(props) {
         setChart(action.toChart);
         break;
       }
-      case history.SET_STITCH: {
-        setStitch(action.row, action.column, action.toColor, false);
+      case history.SET_STITCHES: {
+        setStitches(
+          action.stitches.map((stitch) => ({
+            row: stitch.row,
+            column: stitch.column,
+            color: stitch.toColor,
+          }))
+        );
         break;
       }
       case history.SET_COLOR: {
@@ -186,11 +195,13 @@ export default function App(props) {
     }
 
     setUndoHistory(newHistory);
-  }, [setSize, undoHistory, setStitch, setColor, colors]);
+  }, [undoHistory, setStitches, setColor, addColor, deleteColor]);
 
   useEffect(() => {
     function handleKeyDown(event) {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+        // Only do our redo/undo actions
+        event.preventDefault();
         if (event.shiftKey) {
           redo();
         } else {
@@ -200,7 +211,7 @@ export default function App(props) {
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [undo]);
+  }, [undo, redo]);
 
   return (
     <div className="App">
@@ -242,6 +253,8 @@ export default function App(props) {
         chart={chart}
         colors={colors}
         setStitch={setStitch}
+        selectedColor={selectedColor}
+        onDrawingEnd={addStitchesToHistory}
       />
 
       <YokeView chart={chart} colors={colors} numRepeats={numRepeats} />
