@@ -48,13 +48,11 @@ export function advance(history) {
 }
 
 export const RESIZE = "RESIZE";
-export function resize(fromRows, fromColumns, toRows, toColumns) {
+export function resize(fromChart, toChart) {
   return {
     type: RESIZE,
-    fromRows,
-    fromColumns,
-    toRows,
-    toColumns,
+    fromChart,
+    toChart,
   };
 }
 

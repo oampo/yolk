@@ -9,8 +9,6 @@ export default function App(props) {
   const [selectedColor, setSelectedColor] = useState(0);
   const [nextColorId, setNextColorId] = useState(2);
   const [chart, setChart] = useState([[null]]);
-  const [numRows, setNumRows] = useState(1);
-  const [numColumns, setNumColumns] = useState(1);
   const [numRepeats, setNumRepeats] = useState(16);
   const [undoHistory, setUndoHistory] = useState(history.create());
 
@@ -28,18 +26,16 @@ export default function App(props) {
         }
       }
       setChart(newChart);
-      setNumRows(rows);
-      setNumColumns(columns);
       if (addToHistory) {
         setUndoHistory(
           history.push(
             undoHistory,
-            history.resize(numRows, numColumns, rows, columns)
+            history.resize(chart, newChart)
           )
         );
       }
     },
-    [chart, numColumns, numRows, undoHistory]
+    [chart, undoHistory]
   );
 
   const setStitch = useCallback(
@@ -132,7 +128,7 @@ export default function App(props) {
     }
     switch (action.type) {
       case history.RESIZE: {
-        setSize(action.fromRows, action.fromColumns, false);
+        setChart(action.fromChart);
         break;
       }
       case history.SET_STITCH: {
@@ -166,7 +162,7 @@ export default function App(props) {
     }
     switch (action.type) {
       case history.RESIZE: {
-        setSize(action.toRows, action.toColumns, false);
+        setChart(action.toChart);
         break;
       }
       case history.SET_STITCH: {
@@ -214,16 +210,16 @@ export default function App(props) {
           id="rows"
           type="number"
           min="1"
-          value={numRows}
-          onChange={(e) => setSize(Number(e.target.value), numColumns)}
+          value={chart.length}
+          onChange={(e) => setSize(Number(e.target.value), chart[0].length)}
         />
         <label htmlFor="stitches">Stitches</label>
         <input
           id="stitches"
           type="number"
           min="1"
-          value={numColumns}
-          onChange={(e) => setSize(numRows, Number(e.target.value))}
+          value={chart[0].length}
+          onChange={(e) => setSize(chart.length, Number(e.target.value))}
         />
         <label htmlFor="repeats">Repeats</label>
         <input
@@ -244,8 +240,6 @@ export default function App(props) {
       />
       <Chart
         chart={chart}
-        numRows={numRows}
-        numColumns={numColumns}
         colors={colors}
         setStitch={setStitch}
       />
