@@ -1,3 +1,9 @@
+.color-palette {
+  min-height: 100%;
+  z-index: 2;
+  background-color: white;
+}
+
 .toolbar-button {
   width: 75px;
   height: 75px;

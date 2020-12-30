@@ -1,0 +1,56 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  min-height: 100vh;
+}
+
+.bottom {
+  flex: 1;
+  display: flex;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+}
+
+.divider {
+  height: 100%;
+  width: 5px;
+  background-color: #CCCCCC;
+  position: relative;
+  z-index: 1;
+}
+
+.divider-tab {
+  text-align: center;
+  user-select: none;
+  writing-mode: vertical-rl;
+  display: block;
+  position: fixed;
+  height: 100px;
+  width: 25px;
+  top: 50%;
+  padding: 5px;
+  background-color: #CCCCCC;
+  transform: translate(0em, -50%);
+}
+
+
+.divider-view-tab {
+  margin-left: -25px;
+  clip-path: polygon(0% 15%, 100% 0%, 100% 100%, 0% 85%);
+}
+
+.divider-edit-tab {
+  clip-path: polygon(0% 0%, 100% 15%, 100% 85%, 0% 100%);
+}
+
+@media (min-width: 768px) {
+  .divider-tab {
+    display: none;
+  }
+}

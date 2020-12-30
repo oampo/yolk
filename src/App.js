@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import ColorPalette from "./ColorPalette";
 import Chart from "./Chart";
+import Settings from "./Settings";
 import YokeView from "./YokeView";
 import * as history from "./history";
+import "./App.css";
 
 export default function App(props) {
   const [colors, setColors] = useState({ 0: "#e0e0e0", 1: "#f4eda1" });
   const [selectedColor, setSelectedColor] = useState(0);
   const [nextColorId, setNextColorId] = useState(2);
-  const [chart, setChart] = useState([[null]]);
+  const [chart, setChart] = useState([[null, null], [null, null]]);
   const [numRepeats, setNumRepeats] = useState(16);
   const [undoHistory, setUndoHistory] = useState(history.create());
+  const [view, setView] = useState("edit");
 
   const setSize = useCallback(
     (rows, columns, addToHistory = true) => {
@@ -214,50 +217,47 @@ export default function App(props) {
   }, [undo, redo]);
 
   return (
-    <div className="App">
-      <form>
-        <label htmlFor="rows">Rows</label>
-        <input
-          id="rows"
-          type="number"
-          min="1"
-          value={chart.length}
-          onChange={(e) => setSize(Number(e.target.value), chart[0].length)}
+    <div className="app">
+      <div className="top">
+        <Settings
+          setSize={setSize}
+          setNumRepeats={setNumRepeats}
+          chart={chart}
+          numRepeats={numRepeats}
         />
-        <label htmlFor="stitches">Stitches</label>
-        <input
-          id="stitches"
-          type="number"
-          min="1"
-          value={chart[0].length}
-          onChange={(e) => setSize(chart.length, Number(e.target.value))}
+      </div>
+      <div className="bottom">
+        <ColorPalette
+          colors={colors}
+          selectedColor={selectedColor}
+          selectColor={setSelectedColor}
+          setColor={setColor}
+          addColor={addColor}
+          deleteColor={deleteColor}
         />
-        <label htmlFor="repeats">Repeats</label>
-        <input
-          id="repeats"
-          type="number"
-          min="3"
-          value={numRepeats}
-          onChange={(e) => setNumRepeats(Number(e.target.value))}
-        />
-      </form>
-      <ColorPalette
-        colors={colors}
-        selectedColor={selectedColor}
-        selectColor={setSelectedColor}
-        setColor={setColor}
-        addColor={addColor}
-        deleteColor={deleteColor}
-      />
-      <Chart
-        chart={chart}
-        colors={colors}
-        setStitch={setStitch}
-        selectedColor={selectedColor}
-        onDrawingEnd={addStitchesToHistory}
-      />
+        <main>
+          <Chart
+            chart={chart}
+            colors={colors}
+            setStitch={setStitch}
+            selectedColor={selectedColor}
+            onDrawingEnd={addStitchesToHistory}
+            visible={view === "edit"}
+          />
 
-      <YokeView chart={chart} colors={colors} numRepeats={numRepeats} />
+          <div className="divider">
+            <div className="divider-tab divider-view-tab" onClick={() => setView('view')}>View</div>
+            <div className="divider-tab divider-edit-tab" onClick={() => setView('edit')}>Edit</div>
+          </div>
+
+          <YokeView
+            chart={chart}
+            colors={colors}
+            numRepeats={numRepeats}
+            visible={view === "view"}
+          />
+        </main>
+      </div>
     </div>
   );
 }

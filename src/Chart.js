@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import "./Chart.css";
 
 export default function Chart(props) {
-  const { chart, colors, selectedColor, setStitch, onDrawingEnd } = props;
+  const {
+    chart,
+    colors,
+    selectedColor,
+    setStitch,
+    onDrawingEnd,
+    visible,
+  } = props;
 
   const [drawing, setDrawing] = useState(false);
   const [currentStitches, setCurrentStitches] = useState([]);
@@ -31,12 +38,15 @@ export default function Chart(props) {
 
     setDrawing(true);
     setStitch(rowIndex, columnIndex);
-    setCurrentStitches([...currentStitches, {
+    setCurrentStitches([
+      ...currentStitches,
+      {
         row: rowIndex,
         column: columnIndex,
         fromColor: chart[rowIndex][columnIndex],
         toColor: selectedColor,
-    }]);
+      },
+    ]);
   }
 
   useEffect(() => {
@@ -86,5 +96,7 @@ export default function Chart(props) {
       </div>
     );
   });
-  return <div className="chart">{rows}</div>;
+  return (
+    <div className={"chart " + (visible ? "" : "chart-hidden")}>{rows}</div>
+  );
 }

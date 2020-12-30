@@ -1,0 +1,29 @@
+.yoke-view {
+  width: 100%;
+  height: 100%;
+  margin-right: -100%;
+  padding: 20px;
+}
+
+.yoke-view-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+
+.yoke-view-image {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+
+@media (min-width: 768px) {
+  .yoke-view {
+    margin-right: 0;
+  }
+}
