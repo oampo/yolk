@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import Header from "./Header";
 import ColorPalette from "./ColorPalette";
 import Chart from "./Chart";
 import Settings from "./Settings";
@@ -10,10 +11,14 @@ export default function App(props) {
   const [colors, setColors] = useState({ 0: "#e0e0e0", 1: "#f4eda1" });
   const [selectedColor, setSelectedColor] = useState(0);
   const [nextColorId, setNextColorId] = useState(2);
-  const [chart, setChart] = useState([[null, null], [null, null]]);
+  const [chart, setChart] = useState([
+    [null, null],
+    [null, null],
+  ]);
   const [numRepeats, setNumRepeats] = useState(16);
   const [undoHistory, setUndoHistory] = useState(history.create());
   const [view, setView] = useState("edit");
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const setSize = useCallback(
     (rows, columns, addToHistory = true) => {
@@ -119,6 +124,10 @@ export default function App(props) {
     [colors, selectedColor, undoHistory]
   );
 
+  function toggleSettings() {
+    setSettingsOpen(!settingsOpen);
+  }
+
   const undo = useCallback(() => {
     const [action, newHistory] = history.pop(undoHistory);
     if (!action) {
@@ -219,11 +228,13 @@ export default function App(props) {
   return (
     <div className="app">
       <div className="top">
+        <Header toggleSettings={toggleSettings} />
         <Settings
           setSize={setSize}
           setNumRepeats={setNumRepeats}
           chart={chart}
           numRepeats={numRepeats}
+          isOpen={settingsOpen}
         />
       </div>
       <div className="bottom">
@@ -246,8 +257,18 @@ export default function App(props) {
           />
 
           <div className="divider">
-            <div className="divider-tab divider-view-tab" onClick={() => setView('view')}>View</div>
-            <div className="divider-tab divider-edit-tab" onClick={() => setView('edit')}>Edit</div>
+            <div
+              className="divider-tab divider-view-tab"
+              onClick={() => setView("view")}
+            >
+              View
+            </div>
+            <div
+              className="divider-tab divider-edit-tab"
+              onClick={() => setView("edit")}
+            >
+              Edit
+            </div>
           </div>
 
           <YokeView

@@ -1,0 +1,44 @@
+.settings {
+  overflow: hidden;
+  transition: margin-top 0.5s ease-in-out;
+}
+
+.settings-form {
+  padding: 10px;
+  transition: margin-top 0.5s ease-in-out;
+}
+
+.settings-form-input {
+  margin: 0 6px;
+}
+
+.settings-form-input[type="number"] {
+  width: 50px;
+}
+
+.settings-form-input[type="radio"] {
+  margin-left: 0;
+}
+
+.input-group {
+  padding: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.settings-form label {
+  display: block;
+  min-width: 100px;
+}
+
+@media (min-width: 768px) {
+  .settings-form {
+    display: flex;
+    transition: none;
+    margin-top: 0 !important;
+  }
+
+  .settings-form label {
+    min-width: 0;
+  }
+}

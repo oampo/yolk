@@ -1,0 +1,34 @@
+header {
+  display: flex;
+  align-items: center;
+}
+
+.main-heading {
+  margin: 0;
+  flex: 1;
+}
+
+
+.main-nav-list {
+  list-style-type: none;
+  display: flex;
+  margin: 0;
+}
+
+.main-nav-list-item {
+  margin: 0 5px;
+}
+
+.main-nav-list-item:first-child {
+  margin-left: 0;
+}
+
+.main-nav-list-item:last-child {
+  margin-right: 0;
+}
+
+@media (min-width: 768px) {
+  .main-nav-settings-button {
+    display: none;
+  }
+}
