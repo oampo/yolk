@@ -93,6 +93,7 @@ export default function Chart(props) {
     return (
       <div className="chart-row" key={rowIndex}>
         {stitches}
+        <div className="chart-row-index">{chart.length - rowIndex}</div>
       </div>
     );
   });

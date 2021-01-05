@@ -17,6 +17,12 @@
   justify-content: center;
 }
 
+.chart-row-index {
+  /* Set width to zero, so it's not included in the centring calculation */
+  width: 0;
+  margin-left: 6px;
+}
+
 .chart-stitch {
   flex: 1;
   max-width: 25px;
