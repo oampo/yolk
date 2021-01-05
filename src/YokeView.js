@@ -5,6 +5,7 @@ import "./YokeView.css";
 const START_RADIUS = 0.25;
 // Minimum row size is one of ten rows
 const MIN_STROKE_WIDTH = (1 - START_RADIUS) / 10;
+const BOUNDS_STROKE_WIDTH = 0.01;
 
 export default function YokeView(props) {
   const { chart, colors, numRepeats } = props;
@@ -14,7 +15,10 @@ export default function YokeView(props) {
     const stitchAngle = segmentAngle / numColumns;
     const stitchStartAngle = stitchIndex * stitchAngle;
     const stitchEndAngle = stitchStartAngle + stitchAngle;
-    const strokeWidth = Math.min((1 - START_RADIUS) / numRows, MIN_STROKE_WIDTH);
+    const strokeWidth = Math.min(
+      (1 - START_RADIUS) / numRows,
+      MIN_STROKE_WIDTH
+    );
     const rowRadius = START_RADIUS + rowIndex * strokeWidth;
 
     const startX = rowRadius * Math.sin(stitchStartAngle);
@@ -59,11 +63,45 @@ export default function YokeView(props) {
     return segments;
   }
 
+  function createBounds(numRows) {
+    const rowStrokeWidth = Math.min(
+      (1 - START_RADIUS) / numRows,
+      MIN_STROKE_WIDTH
+    );
+    const minRadius = START_RADIUS - rowStrokeWidth / 2 - BOUNDS_STROKE_WIDTH;
+    const maxRadius = minRadius + rowStrokeWidth * numRows;
+    return (
+      <>
+        <circle
+          cx="0"
+          cy="0"
+          r={maxRadius}
+          stroke="black"
+          stroke-width={BOUNDS_STROKE_WIDTH}
+          fill="none"
+        />
+        <circle
+          cx="0"
+          cy="0"
+          r={minRadius}
+          stroke="black"
+          stroke-width={BOUNDS_STROKE_WIDTH}
+          fill="none"
+        />
+      </>
+    );
+  }
+
   return (
     <section className="yoke-view">
       <div className="yoke-view-image-wrapper">
-        <svg className="yoke-view-image" viewBox="-1 -1 2 2" preserveAspectRatio="xMidYMin meet">
+        <svg
+          className="yoke-view-image"
+          viewBox="-1 -1 2 2"
+          preserveAspectRatio="xMidYMin meet"
+        >
           {createSegments()}
+          {createBounds(chart.length)}
         </svg>
       </div>
     </section>
