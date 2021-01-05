@@ -16,6 +16,7 @@ export default function App(props) {
     [null, null],
   ]);
   const [numRepeats, setNumRepeats] = useState(16);
+  const [direction, setDirection] = useState('top-down');
   const [undoHistory, setUndoHistory] = useState(history.create());
   const [view, setView] = useState("edit");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -232,9 +233,11 @@ export default function App(props) {
         <Settings
           setSize={setSize}
           setNumRepeats={setNumRepeats}
+          setDirection={setDirection}
           chart={chart}
           numRepeats={numRepeats}
           isOpen={settingsOpen}
+          direction={direction}
         />
       </div>
       <div className="bottom">
@@ -274,6 +277,7 @@ export default function App(props) {
           <YokeView
             chart={chart}
             colors={colors}
+            direction={direction}
             numRepeats={numRepeats}
             visible={view === "view"}
           />

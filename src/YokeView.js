@@ -8,7 +8,7 @@ const MIN_STROKE_WIDTH = (1 - START_RADIUS) / 10;
 const BOUNDS_STROKE_WIDTH = 0.01;
 
 export default function YokeView(props) {
-  const { chart, colors, numRepeats } = props;
+  const { chart, colors, numRepeats, direction } = props;
 
   function createStitch(stitch, stitchIndex, numColumns, rowIndex, numRows) {
     const segmentAngle = (2 * Math.PI) / numRepeats;
@@ -39,7 +39,11 @@ export default function YokeView(props) {
   }
 
   function createSegment() {
-    return chart.map((row, rowIndex) =>
+    let directionalChart = chart;
+    if (direction === 'top-down') {
+      directionalChart = chart.slice().reverse();
+    }
+    return directionalChart.map((row, rowIndex) =>
       row
         .slice()
         .reverse() // RTL
@@ -77,7 +81,7 @@ export default function YokeView(props) {
           cy="0"
           r={maxRadius}
           stroke="black"
-          stroke-width={BOUNDS_STROKE_WIDTH}
+          strokeWidth={BOUNDS_STROKE_WIDTH}
           fill="none"
         />
         <circle
@@ -85,7 +89,7 @@ export default function YokeView(props) {
           cy="0"
           r={minRadius}
           stroke="black"
-          stroke-width={BOUNDS_STROKE_WIDTH}
+          strokeWidth={BOUNDS_STROKE_WIDTH}
           fill="none"
         />
       </>

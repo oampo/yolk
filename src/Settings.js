@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Settings.css";
 
 export default function Settings(props) {
-  const { setSize, setNumRepeats, chart, numRepeats, isOpen } = props;
+  const { setSize, setNumRepeats, setDirection, chart, numRepeats, isOpen, direction } = props;
   // Start negative margin as something large - it'll adjust to the correct
   // value on mount
   const [margin, setMargin] = useState("-400px");
@@ -70,7 +70,8 @@ export default function Settings(props) {
             name="direction"
             value="top-down"
             id="top-down"
-            defaultChecked
+            checked={direction === "top-down"}
+            onChange={(e) => setDirection(e.target.value)}
           />
           <label htmlFor="top-down">Top Down</label>
         </div>
@@ -81,6 +82,8 @@ export default function Settings(props) {
             name="direction"
             value="bottom-up"
             id="bottom-up"
+            checked={direction === "bottom-up"}
+            onChange={(e) => setDirection(e.target.value)}
           />
           <label htmlFor="bottom-up">Bottom Up</label>
         </div>
