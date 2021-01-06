@@ -3,6 +3,7 @@ import Header from "./Header";
 import ColorPalette from "./ColorPalette";
 import Chart from "./Chart";
 import Settings from "./Settings";
+import Toolbar from './Toolbar';
 import YokeView from "./YokeView";
 import * as history from "./history";
 import "./App.css";
@@ -16,8 +17,9 @@ export default function App(props) {
     [null, null],
   ]);
   const [numRepeats, setNumRepeats] = useState(16);
-  const [direction, setDirection] = useState('top-down');
+  const [direction, setDirection] = useState("top-down");
   const [undoHistory, setUndoHistory] = useState(history.create());
+  const [tool, setTool] = useState("brush");
   const [view, setView] = useState("edit");
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -124,6 +126,12 @@ export default function App(props) {
     },
     [colors, selectedColor, undoHistory]
   );
+
+  const flip = useCallback((addToHistory=true) => {
+    setChart(chart.slice().reverse());
+  });
+
+
 
   function toggleSettings() {
     setSettingsOpen(!settingsOpen);
@@ -241,14 +249,17 @@ export default function App(props) {
         />
       </div>
       <div className="bottom">
-        <ColorPalette
-          colors={colors}
-          selectedColor={selectedColor}
-          selectColor={setSelectedColor}
-          setColor={setColor}
-          addColor={addColor}
-          deleteColor={deleteColor}
-        />
+        <section className="sidebar">
+          <Toolbar tool={tool} setTool={setTool} flip={flip} />
+          <ColorPalette
+            colors={colors}
+            selectedColor={selectedColor}
+            selectColor={setSelectedColor}
+            setColor={setColor}
+            addColor={addColor}
+            deleteColor={deleteColor}
+          />
+        </section>
         <main>
           <Chart
             chart={chart}

@@ -23,35 +23,33 @@ export default function ColorPaletteColor(props) {
 
   return (
     <div className="color-palette-color-wrapper">
-      <div
+      <button
         className={`toolbar-button color-palette-color ${
           isSelected ? "color-palette-color-selected" : ""
         }`}
+        aria-pressed={isSelected}
         style={{ backgroundColor: color }}
         onClick={() => selectColor(id)}
-      >
-        <div className="color-palette-color-controls">
-          <button
-            className="color-palette-color-control color-palette-color-edit"
-            onClick={(e) => {
-              // Don't select the color when we choose to edit it
-              e.stopPropagation();
-              setEditing(isEditing ? null : id);
-            }}
-          >
-            <FontAwesomeIcon icon={faPalette} />
-          </button>
-          <button
-            className="color-palette-color-control color-palette-color-delete"
-            onClick={(e) => {
-              // Don't select the color when we choose to edit it
-              e.stopPropagation();
-              deleteColor(id);
-            }}
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </button>
-        </div>
+      ></button>
+      <div className="color-palette-color-controls">
+        <button
+          className="color-palette-color-control color-palette-color-edit"
+          onClick={(e) => {
+            e.stopPropagation();
+            setEditing(isEditing ? null : id);
+          }}
+        >
+          <FontAwesomeIcon icon={faPalette} />
+        </button>
+        <button
+          className="color-palette-color-control color-palette-color-delete"
+          onClick={(e) => {
+            e.stopPropagation();
+            deleteColor(id);
+          }}
+        >
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
       </div>
       {isEditing && (
         <div className="color-palette-color-picker-tooltip">

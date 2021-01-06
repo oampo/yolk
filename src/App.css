@@ -17,6 +17,11 @@ main {
   align-items: flex-start;
 }
 
+.sidebar {
+  z-index: 2;
+  background-color: white;
+}
+
 .divider {
   height: 100%;
   width: 5px;

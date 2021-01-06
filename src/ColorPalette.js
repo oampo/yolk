@@ -46,9 +46,13 @@ export default function ColorPalette(props) {
       classes += " color-palette-color-selected";
     }
     return (
-      <div className={classes} onClick={() => selectColor(null)}>
+      <button
+        className={classes}
+        aria-pressed={selectedColor === null}
+        onClick={() => selectColor(null)}
+      >
         X
-      </div>
+      </button>
     );
   }
 

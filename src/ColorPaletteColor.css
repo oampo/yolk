@@ -1,10 +1,12 @@
 .color-palette-color-wrapper {
   position: relative;
+  display: flex;
+  width: 75px;
+  height: 75px;
 }
 
 .color-palette-color {
-  display: flex;
-  justify-content: flex-end;
+  flex: 1;
 }
 
 .color-palette-color-controls {
@@ -14,6 +16,16 @@
 
 .color-palette-color-control {
   flex: 1;
+  background-color: transparent;
+  border: 1px solid #CCCCCC;
+}
+
+.color-palette-color-control:active, .color-palette-color-control:focus-visible {
+  outline: none;
+}
+
+.color-palette-color-control svg {
+  margin: 0;
 }
 
 .color-palette-color-selected {

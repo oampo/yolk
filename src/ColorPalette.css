@@ -4,14 +4,6 @@
   background-color: white;
 }
 
-.toolbar-button {
-  width: 75px;
-  height: 75px;
-  line-height: 75px;
-  vertical-align: middle;
-  text-align: center;
-}
-
 .color-palette-color-none,
 .color-palette-add {
   font-size: 40px;
