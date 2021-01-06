@@ -129,7 +129,12 @@ export default function App(props) {
 
   const flip = useCallback((addToHistory=true) => {
     setChart(chart.slice().reverse());
-  });
+    if (addToHistory) {
+        setUndoHistory(
+          history.push(undoHistory, history.flip())
+        );
+    }
+  }, [chart, undoHistory]);
 
 
 
@@ -173,11 +178,15 @@ export default function App(props) {
         setColors({ ...colors, [action.id]: action.color });
         break;
       }
+      case history.FLIP: {
+        flip(false);
+        break;
+      }
       default:
         break;
     }
     setUndoHistory(newHistory);
-  }, [undoHistory, setStitches, setColor, colors]);
+  }, [undoHistory, setStitches, setColor, colors, flip]);
 
   const redo = useCallback(() => {
     const [action, newHistory] = history.advance(undoHistory);
@@ -211,12 +220,16 @@ export default function App(props) {
         deleteColor(action.id, false);
         break;
       }
+      case history.FLIP: {
+        flip(false);
+        break;
+      }
       default:
         break;
     }
 
     setUndoHistory(newHistory);
-  }, [undoHistory, setStitches, setColor, addColor, deleteColor]);
+  }, [undoHistory, setStitches, setColor, addColor, deleteColor, flip]);
 
   useEffect(() => {
     function handleKeyDown(event) {

@@ -137,3 +137,10 @@ export function deleteColor(id, color) {
     color,
   };
 }
+
+export const FLIP = "FLIP";
+export function flip() {
+  return {
+    type: FLIP,
+  };
+}
