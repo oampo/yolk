@@ -8,10 +8,6 @@
   justify-content: center;
 }
 
-.toolbar-button:active, .toolbar-button:focus-visible {
-  outline: none;
-}
-
 .toolbar-button[aria-pressed="true"] {
   border: 4px solid black;
   outline: none;
