@@ -23,6 +23,7 @@ export default function App(props) {
   const [view, setView] = useState("edit");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selection, setSelection] = useState(null);
+  const [clipboard, setClipboard] = useState(null);
 
   const setSize = useCallback(
     (rows, columns, addToHistory = true) => {
@@ -68,14 +69,26 @@ export default function App(props) {
   }
 
   const setStitches = useCallback(
-    (stitches) => {
+    (stitches, addToHistory = true) => {
       const newChart = chart.map((row) => [...row]);
       stitches.forEach((stitch) => {
         newChart[stitch.row][stitch.column] = stitch.color;
       });
       setChart(newChart);
+
+      if (addToHistory) {
+        const stitchesForHistory = stitches.map((stitch) => ({
+          row: stitch.row,
+          column: stitch.column,
+          fromColor: chart[stitch.row][stitch.column],
+          toColor: stitch.color,
+        }));
+        setUndoHistory(
+          history.push(undoHistory, history.setStitches(stitchesForHistory))
+        );
+      }
     },
-    [chart]
+    [chart, undoHistory]
   );
 
   function addStitchesToHistory(stitches) {
@@ -84,21 +97,34 @@ export default function App(props) {
 
   function setSelectionStart(row, column) {
     setSelection({
-      start: {row, column},
-      end: {row, column}
+      start: { row, column },
+      end: { row, column },
     });
   }
 
   function setSelectionEnd(row, column) {
     setSelection({
       ...selection,
-      end: {row, column}
+      end: { row, column },
     });
   }
 
   function clearSelection() {
     setSelection(null);
   }
+
+  const getSelectionBounds = useCallback(() => {
+    if (!selection) {
+      return null;
+    }
+
+    return {
+      top: Math.min(selection.start.row, selection.end.row),
+      bottom: Math.max(selection.start.row, selection.end.row),
+      left: Math.min(selection.start.column, selection.end.column),
+      right: Math.max(selection.start.column, selection.end.column),
+    };
+  }, [selection]);
 
   const setColor = useCallback(
     (id, newColor, addToHistory = true) => {
@@ -156,6 +182,63 @@ export default function App(props) {
     [chart, undoHistory]
   );
 
+  const copy = useCallback(() => {
+    if (selection === null) {
+      return;
+    }
+    const bounds = getSelectionBounds();
+    const region = [];
+    for (let i = bounds.top; i <= bounds.bottom; i++) {
+      const row = [];
+      for (let j = bounds.left; j <= bounds.right; j++) {
+        row.push(chart[i][j]);
+      }
+      region.push(row);
+    }
+    setClipboard(region);
+  }, [chart, getSelectionBounds, selection]);
+
+  const paste = useCallback(() => {
+    if (clipboard === null || selection === null) {
+      return;
+    }
+    const stitches = [];
+    const selectionBounds = getSelectionBounds();
+
+    for (let i = 0; i < clipboard.length; i++) {
+      const pasteRow = i + selectionBounds.top;
+      if (pasteRow >= chart.length) {
+        // Would paste below the edge of the chart
+        break;
+      }
+      const row = clipboard[i];
+      for (let j = 0; j < row.length; j++) {
+        const pasteColumn = j + selectionBounds.left;
+        if (pasteColumn >= chart[0].length) {
+          // Would paste beyond the right of the chart
+          break;
+        }
+        const color = row[j];
+        stitches.push({ color, row: pasteRow, column: pasteColumn });
+      }
+    }
+    setStitches(stitches);
+  }, [chart, clipboard, getSelectionBounds, selection, setStitches]);
+
+  const deleteSelection = useCallback(() => {
+    if (selection === null) {
+      return;
+    }
+    const selectionBounds = getSelectionBounds();
+    const stitches = [];
+    for (let i = selectionBounds.top; i <= selectionBounds.bottom; i++) {
+      for (let j = selectionBounds.left; j <= selectionBounds.right; j++) {
+        stitches.push({ row: i, column: j, color: null });
+      }
+    }
+    setStitches(stitches);
+  }, [getSelectionBounds, selection, setStitches]);
+
   function toggleSettings() {
     setSettingsOpen(!settingsOpen);
   }
@@ -178,7 +261,8 @@ export default function App(props) {
               column: stitch.column,
               color: stitch.fromColor,
             }))
-            .reverse()
+            .reverse(),
+          false
         );
         break;
       }
@@ -222,7 +306,8 @@ export default function App(props) {
             row: stitch.row,
             column: stitch.column,
             color: stitch.toColor,
-          }))
+          })),
+          false
         );
         break;
       }
@@ -251,32 +336,40 @@ export default function App(props) {
 
   useEffect(() => {
     function handleKeyDown(event) {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
-        // Only do our redo/undo actions
-        event.preventDefault();
-        if (event.shiftKey) {
-          redo();
-        } else {
-          undo();
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case "z": {
+            event.preventDefault();
+            undo();
+            break;
+          }
+          case "Z": {
+            // Only do our redo actions
+            event.preventDefault();
+            redo();
+            break;
+          }
+          case "c": {
+            copy();
+            break;
+          }
+          case "x": {
+            copy();
+            deleteSelection();
+            break;
+          }
+          case "v": {
+            paste();
+            break;
+          }
+          default:
+            break;
         }
       }
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [undo, redo]);
-
-  function getSelectionBounds() {
-    if (!selection) {
-      return null;
-    }
-
-    return {
-      top: Math.min(selection.start.row, selection.end.row),
-      bottom: Math.max(selection.start.row, selection.end.row),
-      left: Math.min(selection.start.column, selection.end.column),
-      right: Math.max(selection.start.column, selection.end.column)
-    };
-  }
+  }, [undo, redo, copy, paste, deleteSelection]);
 
   return (
     <div className="app">
