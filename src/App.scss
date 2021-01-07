@@ -1,3 +1,5 @@
+@import 'colors.scss';
+
 .app {
   display: flex;
   flex-direction: column;
@@ -19,13 +21,13 @@ main {
 
 .sidebar {
   z-index: 2;
-  background-color: white;
+  background-color: $white;
 }
 
 .divider {
   height: 100%;
   width: 5px;
-  background-color: #CCCCCC;
+  background-color: $gray;
   position: relative;
   z-index: 1;
 }
@@ -37,10 +39,10 @@ main {
   display: block;
   position: fixed;
   height: 100px;
-  width: 25px;
+  width: 30px;
   top: 50%;
   padding: 5px;
-  background-color: #CCCCCC;
+  background-color: $gray;
   transform: translate(0em, -50%);
 }
 

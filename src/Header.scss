@@ -1,7 +1,11 @@
+@import 'colors.scss';
+
 header {
   display: flex;
   align-items: center;
   padding: 12px;
+  background-color: $black;
+  color: $white;
 }
 
 .logo {

@@ -1,3 +1,5 @@
+@import 'colors.scss';
+
 * {
   box-sizing: border-box;
 }
@@ -10,11 +12,30 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2D2A32;
+  color: $black;
+  background-color: $white;
+  font-size: 20px;
 }
 
-button svg {
-  margin: 0 6px;
+button {
+    padding: 6px;
+}
+
+input {
+    font-size: 1rem;
+}
+
+.button-large {
+    font-size: 1.5rem;
+}
+
+.button-primary {
+    background-color: $primary;
+    border: 1px solid $black;
+}
+
+.button-primary:active {
+    background-color: scale-color($primary, $lightness: -10%);
 }
 
 /*

@@ -9,7 +9,7 @@ import * as history from "./history";
 import "./App.scss";
 
 export default function App(props) {
-  const [colors, setColors] = useState({ 0: "#e0e0e0", 1: "#f4eda1" });
+  const [colors, setColors] = useState({ 0: "#CC9966", 1: "#FFD500" });
   const [selectedColor, setSelectedColor] = useState(0);
   const [nextColorId, setNextColorId] = useState(2);
   const [chart, setChart] = useState([

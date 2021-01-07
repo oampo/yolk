@@ -1,3 +1,5 @@
+@import 'colors.scss';
+
 .color-palette-color-wrapper {
   position: relative;
   display: flex;
@@ -17,7 +19,7 @@
 .color-palette-color-control {
   flex: 1;
   background-color: transparent;
-  border: 1px solid #CCCCCC;
+  border: 1px solid $gray;
 }
 
 .color-palette-color-control svg {
@@ -25,7 +27,7 @@
 }
 
 .color-palette-color-selected {
-  border: 4px solid black;
+  border: 4px solid $black;
 }
 
 .chrome-picker {
@@ -36,7 +38,7 @@
   position: absolute;
   left: 87px;
   bottom: 0px;
-  background-color: #d0d0d0;
+  background-color: $gray;
   padding: 10px;
   z-index: 1;
 }

@@ -13,13 +13,13 @@ export default function Header(props) {
       <nav className="main-nav">
         <ul className="main-nav-list">
           <li className="main-nav-list-item">
-            <button className="main-nav-settings-button" onClick={toggleSettings}>
+            <button className="main-nav-settings-button button-primary button-large" onClick={toggleSettings}>
               <FontAwesomeIcon name="settings" icon={faCogs} />
             </button>
           </li>
           {/*
           <li className="main-nav-list-item">
-            <button>
+            <button className="button-primary button-large">
               <FontAwesomeIcon icon={faSignInAlt} />
               Log in to save
             </button>

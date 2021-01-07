@@ -1,6 +1,10 @@
+@import 'colors.scss';
+
 .settings {
   overflow: hidden;
   transition: margin-top 0.5s ease-in-out;
+  background-color: $primary;
+  z-index: 3;
 }
 
 .settings-form {
