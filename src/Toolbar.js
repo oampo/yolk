@@ -3,12 +3,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPaintBrush,
   faVectorSquare,
+  faCopy,
+  faPaste,
   faArrowsAltV,
 } from "@fortawesome/free-solid-svg-icons";
 import "./Toolbar.scss";
 
 export default function Toolbar(props) {
-  const { tool, setTool, flip } = props;
+  const { tool, setTool, copy, paste, flip } = props;
   return (
     <section className="toolbar">
       <button
@@ -25,6 +27,14 @@ export default function Toolbar(props) {
       >
         <FontAwesomeIcon icon={faVectorSquare} />
       </button>
+      <div className="toolbar-copy-paste">
+        <button className="toolbar-button toolbar-copy-button" onClick={copy}>
+          <FontAwesomeIcon icon={faCopy} />
+        </button>
+        <button className="toolbar-button toolbar-paste-button" onClick={paste}>
+          <FontAwesomeIcon icon={faPaste} />
+        </button>
+      </div>
       <button className="toolbar-button toolbar-flip-button" onClick={flip}>
         <FontAwesomeIcon icon={faArrowsAltV} />
       </button>

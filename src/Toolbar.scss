@@ -1,9 +1,10 @@
 @import 'colors.scss';
+$buttonSize: 75px;
 
 .toolbar-button {
   display: flex;
-  width: 75px;
-  height: 75px;
+  width: $buttonSize;
+  height: $buttonSize;
   background-color: transparent;
   border: 1px solid $gray;
   align-items: center;
@@ -18,4 +19,17 @@
 .toolbar-button svg {
   flex: 1;
   font-size: 30px;
+}
+
+.toolbar-copy-paste {
+    display: flex;
+}
+
+.toolbar-copy-button, .toolbar-paste-button {
+    width: $buttonSize / 2;
+    height: $buttonSize / 2;
+
+    svg {
+        font-size: 20px;
+    }
 }

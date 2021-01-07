@@ -342,8 +342,7 @@ export default function App(props) {
             event.preventDefault();
             if (event.shiftKey) {
               redo();
-            }
-            else {
+            } else {
               undo();
             }
             break;
@@ -386,7 +385,13 @@ export default function App(props) {
       </div>
       <div className="bottom">
         <section className="sidebar">
-          <Toolbar tool={tool} setTool={setTool} flip={flip} />
+          <Toolbar
+            tool={tool}
+            setTool={setTool}
+            copy={copy}
+            paste={paste}
+            flip={flip}
+          />
           <ColorPalette
             colors={colors}
             selectedColor={selectedColor}
