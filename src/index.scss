@@ -21,6 +21,10 @@ button {
     padding: 6px;
 }
 
+button:disabled {
+    color: $gray;
+}
+
 input {
     font-size: 1rem;
 }
