@@ -337,16 +337,15 @@ export default function App(props) {
   useEffect(() => {
     function handleKeyDown(event) {
       if (event.ctrlKey || event.metaKey) {
-        switch (event.key) {
+        switch (event.key.toLowerCase()) {
           case "z": {
             event.preventDefault();
-            undo();
-            break;
-          }
-          case "Z": {
-            // Only do our redo actions
-            event.preventDefault();
-            redo();
+            if (event.shiftKey) {
+              redo();
+            }
+            else {
+              undo();
+            }
             break;
           }
           case "c": {
