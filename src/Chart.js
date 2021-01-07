@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./Chart.scss";
 
 const SELECTION_BORDER_STYLE = "3px dashed black";
@@ -15,14 +15,16 @@ export default function Chart(props) {
     selectionBounds,
     setSelectionStart,
     setSelectionEnd,
-    clearSelection
+    clearSelection,
   } = props;
 
   const [drawing, setDrawing] = useState(false);
   const [currentStitches, setCurrentStitches] = useState([]);
 
-  function handleClick(e, rowIndex, columnIndex) {
-    e.preventDefault();
+  function handleMouseDown(e, rowIndex, columnIndex) {
+    if (e.type === "mousedown") {
+      e.preventDefault();
+    }
     setDrawing(true);
 
     if (tool === "brush") {
@@ -36,43 +38,62 @@ export default function Chart(props) {
           toColor: selectedColor,
         },
       ]);
-    }
-    else if (tool === "select") {
+    } else if (tool === "select") {
       setSelectionStart(rowIndex, columnIndex);
     }
   }
 
-  function handleMouseOver(e, rowIndex, columnIndex) {
-    const buttonPressed =
-      e.buttons !== undefined ? e.buttons : e.nativeEvent.which;
-    if (buttonPressed !== 1) {
-      // Left button not pressed
-      return;
-    }
-
-    setDrawing(true);
-
-    if (tool === "brush") {
-      setStitch(rowIndex, columnIndex);
-      setCurrentStitches([
-        ...currentStitches,
-        {
-          row: rowIndex,
-          column: columnIndex,
-          fromColor: chart[rowIndex][columnIndex],
-          toColor: selectedColor,
-        },
-      ]);
-    }
-    else if (tool === "select") {
-      if (drawing === false) {
-        setSelectionStart(rowIndex, columnIndex);
+  const handleMouseOver = useCallback(
+    (e, rowIndex, columnIndex) => {
+      if (e.type === "mouseover") {
+        const buttonPressed =
+          e.buttons !== undefined ? e.buttons : e.nativeEvent.which;
+        if (buttonPressed !== 1) {
+          // Left button not pressed
+          return;
+        }
       }
-      else {
-        setSelectionEnd(rowIndex, columnIndex);
+
+      setDrawing(true);
+
+      if (tool === "brush") {
+        if (
+          currentStitches.length &&
+          currentStitches[currentStitches.length - 1].row === rowIndex &&
+          currentStitches[currentStitches.length - 1].column === columnIndex
+        ) {
+          // Touch over the same stitch as before - no need to record it again
+          return;
+        }
+        setStitch(rowIndex, columnIndex);
+        setCurrentStitches([
+          ...currentStitches,
+          {
+            row: rowIndex,
+            column: columnIndex,
+            fromColor: chart[rowIndex][columnIndex],
+            toColor: selectedColor,
+          },
+        ]);
+      } else if (tool === "select") {
+        if (drawing === false) {
+          setSelectionStart(rowIndex, columnIndex);
+        } else {
+          setSelectionEnd(rowIndex, columnIndex);
+        }
       }
-    }
-  }
+    },
+    [
+      chart,
+      currentStitches,
+      drawing,
+      selectedColor,
+      setSelectionStart,
+      setSelectionEnd,
+      setStitch,
+      tool,
+    ]
+  );
 
   useEffect(() => {
     if (!drawing) {
@@ -88,16 +109,25 @@ export default function Chart(props) {
       }
     }
     document.addEventListener("mouseup", onMouseUp);
-    return () => document.removeEventListener("mouseup", onMouseUp);
+    document.addEventListener("touchend", onMouseUp);
+    return () => {
+      document.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener("touchend", onMouseUp);
+    };
   }, [drawing, currentStitches, onDrawingEnd, tool]);
 
   useEffect(() => {
-    if (!selectionBounds || tool !== 'select') {
+    if (!selectionBounds || tool !== "select") {
       return;
     }
 
     function onMouseDown(e) {
-      if (e.target.classList.contains('chart-stitch')) {
+      if (
+        e.target.classList.contains("chart-stitch") ||
+        e.target.closest(".toolbar-copy-button") ||
+        e.target.closest(".toolbar-paste-button") ||
+        e.target.closest(".toolbar-select-button")
+      ) {
         return;
       }
       clearSelection();
@@ -105,6 +135,27 @@ export default function Chart(props) {
     document.addEventListener("mousedown", onMouseDown);
     return () => document.removeEventListener("mousedown", onMouseDown);
   }, [selectionBounds, tool, clearSelection]);
+
+  useEffect(() => {
+    if (!drawing) {
+      return;
+    }
+    function onTouchMove(e) {
+      const touch = e.touches[0];
+      const element = document.elementFromPoint(
+        touch.pageX - window.pageXOffset,
+        touch.pageY - window.pageYOffset
+      );
+      if (!element.classList.contains("chart-stitch")) {
+        return;
+      }
+      const row = Number(element.dataset.row);
+      const column = Number(element.dataset.column);
+      handleMouseOver(e, row, column);
+    }
+    document.addEventListener("touchmove", onTouchMove);
+    return () => document.removeEventListener("touchmove", onTouchMove);
+  }, [drawing, handleMouseOver]);
 
   function getBorders(rowIndex, columnIndex, selectionBounds) {
     if (!selectionBounds) {
@@ -149,7 +200,10 @@ export default function Chart(props) {
             key={columnIndex}
             style={style}
             className="chart-stitch chart-stitch-ignore"
-            onMouseDown={(e) => handleClick(e, rowIndex, columnIndex)}
+            data-row={rowIndex}
+            data-column={columnIndex}
+            onMouseDown={(e) => handleMouseDown(e, rowIndex, columnIndex)}
+            onTouchStart={(e) => handleMouseDown(e, rowIndex, columnIndex)}
             onMouseOver={(e) => handleMouseOver(e, rowIndex, columnIndex)}
           />
         );
@@ -162,7 +216,10 @@ export default function Chart(props) {
           key={columnIndex}
           className="chart-stitch"
           style={style}
-          onMouseDown={(e) => handleClick(e, rowIndex, columnIndex)}
+          data-row={rowIndex}
+          data-column={columnIndex}
+          onMouseDown={(e) => handleMouseDown(e, rowIndex, columnIndex)}
+          onTouchStart={(e) => handleMouseDown(e, rowIndex, columnIndex)}
           onMouseOver={(e) => handleMouseOver(e, rowIndex, columnIndex)}
         />
       );
