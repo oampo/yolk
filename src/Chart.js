@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./Chart.css";
 
+const SELECTION_BORDER_STYLE = "3px dashed black";
+
 export default function Chart(props) {
   const {
     chart,
@@ -9,6 +11,11 @@ export default function Chart(props) {
     setStitch,
     onDrawingEnd,
     visible,
+    tool,
+    selectionBounds,
+    setSelectionStart,
+    setSelectionEnd,
+    clearSelection
   } = props;
 
   const [drawing, setDrawing] = useState(false);
@@ -16,16 +23,23 @@ export default function Chart(props) {
 
   function handleClick(e, rowIndex, columnIndex) {
     e.preventDefault();
-    setStitch(rowIndex, columnIndex);
     setDrawing(true);
-    setCurrentStitches([
-      {
-        row: rowIndex,
-        column: columnIndex,
-        fromColor: chart[rowIndex][columnIndex],
-        toColor: selectedColor,
-      },
-    ]);
+
+    if (tool === "brush") {
+      setStitch(rowIndex, columnIndex);
+      setDrawing(true);
+      setCurrentStitches([
+        {
+          row: rowIndex,
+          column: columnIndex,
+          fromColor: chart[rowIndex][columnIndex],
+          toColor: selectedColor,
+        },
+      ]);
+    }
+    else if (tool === "select") {
+      setSelectionStart(rowIndex, columnIndex);
+    }
   }
 
   function handleMouseOver(e, rowIndex, columnIndex) {
@@ -37,16 +51,27 @@ export default function Chart(props) {
     }
 
     setDrawing(true);
-    setStitch(rowIndex, columnIndex);
-    setCurrentStitches([
-      ...currentStitches,
-      {
-        row: rowIndex,
-        column: columnIndex,
-        fromColor: chart[rowIndex][columnIndex],
-        toColor: selectedColor,
-      },
-    ]);
+
+    if (tool === "brush") {
+      setStitch(rowIndex, columnIndex);
+      setCurrentStitches([
+        ...currentStitches,
+        {
+          row: rowIndex,
+          column: columnIndex,
+          fromColor: chart[rowIndex][columnIndex],
+          toColor: selectedColor,
+        },
+      ]);
+    }
+    else if (tool === "select") {
+      if (drawing === false) {
+        setSelectionStart(rowIndex, columnIndex);
+      }
+      else {
+        setSelectionEnd(rowIndex, columnIndex);
+      }
+    }
   }
 
   useEffect(() => {
@@ -56,19 +81,73 @@ export default function Chart(props) {
 
     function onMouseUp() {
       setDrawing(false);
-      onDrawingEnd(currentStitches);
-      setCurrentStitches([]);
+
+      if (tool === "brush") {
+        onDrawingEnd(currentStitches);
+        setCurrentStitches([]);
+      }
     }
     document.addEventListener("mouseup", onMouseUp);
     return () => document.removeEventListener("mouseup", onMouseUp);
-  }, [drawing, currentStitches, onDrawingEnd]);
+  }, [drawing, currentStitches, onDrawingEnd, tool]);
+
+  useEffect(() => {
+    if (!selectionBounds || tool !== 'select') {
+      return;
+    }
+
+    function onMouseDown(e) {
+      if (e.target.classList.contains('chart-stitch')) {
+        return;
+      }
+      clearSelection();
+    }
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, [selectionBounds, tool, clearSelection]);
+
+  function getBorders(rowIndex, columnIndex, selectionBounds) {
+    if (!selectionBounds) {
+      return {};
+    }
+
+    return {
+      borderTop:
+        columnIndex >= selectionBounds.left &&
+        columnIndex <= selectionBounds.right &&
+        rowIndex === selectionBounds.top
+          ? SELECTION_BORDER_STYLE
+          : undefined,
+      borderBottom:
+        columnIndex >= selectionBounds.left &&
+        columnIndex <= selectionBounds.right &&
+        rowIndex === selectionBounds.bottom
+          ? SELECTION_BORDER_STYLE
+          : undefined,
+      borderLeft:
+        rowIndex >= selectionBounds.top &&
+        rowIndex <= selectionBounds.bottom &&
+        columnIndex === selectionBounds.left
+          ? SELECTION_BORDER_STYLE
+          : undefined,
+      borderRight:
+        rowIndex >= selectionBounds.top &&
+        rowIndex <= selectionBounds.bottom &&
+        columnIndex === selectionBounds.right
+          ? SELECTION_BORDER_STYLE
+          : undefined,
+    };
+  }
 
   const rows = chart.map((row, rowIndex) => {
     const stitches = row.map((stitch, columnIndex) => {
+      const style = getBorders(rowIndex, columnIndex, selectionBounds);
+
       if (stitch === null || colors[stitch] === null) {
         return (
           <div
             key={columnIndex}
+            style={style}
             className="chart-stitch chart-stitch-ignore"
             onMouseDown={(e) => handleClick(e, rowIndex, columnIndex)}
             onMouseOver={(e) => handleMouseOver(e, rowIndex, columnIndex)}
@@ -76,9 +155,8 @@ export default function Chart(props) {
         );
       }
 
-      const style = {
-        backgroundColor: colors[stitch],
-      };
+      style.backgroundColor = colors[stitch];
+
       return (
         <div
           key={columnIndex}

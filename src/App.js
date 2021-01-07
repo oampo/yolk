@@ -3,7 +3,7 @@ import Header from "./Header";
 import ColorPalette from "./ColorPalette";
 import Chart from "./Chart";
 import Settings from "./Settings";
-import Toolbar from './Toolbar';
+import Toolbar from "./Toolbar";
 import YokeView from "./YokeView";
 import * as history from "./history";
 import "./App.css";
@@ -22,6 +22,7 @@ export default function App(props) {
   const [tool, setTool] = useState("brush");
   const [view, setView] = useState("edit");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [selection, setSelection] = useState(null);
 
   const setSize = useCallback(
     (rows, columns, addToHistory = true) => {
@@ -81,6 +82,24 @@ export default function App(props) {
     setUndoHistory(history.push(undoHistory, history.setStitches(stitches)));
   }
 
+  function setSelectionStart(row, column) {
+    setSelection({
+      start: {row, column},
+      end: {row, column}
+    });
+  }
+
+  function setSelectionEnd(row, column) {
+    setSelection({
+      ...selection,
+      end: {row, column}
+    });
+  }
+
+  function clearSelection() {
+    setSelection(null);
+  }
+
   const setColor = useCallback(
     (id, newColor, addToHistory = true) => {
       setColors({
@@ -127,16 +146,15 @@ export default function App(props) {
     [colors, selectedColor, undoHistory]
   );
 
-  const flip = useCallback((addToHistory=true) => {
-    setChart(chart.slice().reverse());
-    if (addToHistory) {
-        setUndoHistory(
-          history.push(undoHistory, history.flip())
-        );
-    }
-  }, [chart, undoHistory]);
-
-
+  const flip = useCallback(
+    (addToHistory = true) => {
+      setChart(chart.slice().reverse());
+      if (addToHistory) {
+        setUndoHistory(history.push(undoHistory, history.flip()));
+      }
+    },
+    [chart, undoHistory]
+  );
 
   function toggleSettings() {
     setSettingsOpen(!settingsOpen);
@@ -247,6 +265,19 @@ export default function App(props) {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [undo, redo]);
 
+  function getSelectionBounds() {
+    if (!selection) {
+      return null;
+    }
+
+    return {
+      top: Math.min(selection.start.row, selection.end.row),
+      bottom: Math.max(selection.start.row, selection.end.row),
+      left: Math.min(selection.start.column, selection.end.column),
+      right: Math.max(selection.start.column, selection.end.column)
+    };
+  }
+
   return (
     <div className="app">
       <div className="top">
@@ -277,10 +308,15 @@ export default function App(props) {
           <Chart
             chart={chart}
             colors={colors}
+            selectionBounds={getSelectionBounds()}
             setStitch={setStitch}
+            tool={tool}
             selectedColor={selectedColor}
             onDrawingEnd={addStitchesToHistory}
             visible={view === "edit"}
+            setSelectionStart={setSelectionStart}
+            setSelectionEnd={setSelectionEnd}
+            clearSelection={clearSelection}
           />
 
           <div className="divider">
