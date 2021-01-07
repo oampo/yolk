@@ -5,7 +5,7 @@ import {
   faVectorSquare,
   faArrowsAltV,
 } from "@fortawesome/free-solid-svg-icons";
-import "./Toolbar.css";
+import "./Toolbar.scss";
 
 export default function Toolbar(props) {
   const { tool, setTool, flip } = props;

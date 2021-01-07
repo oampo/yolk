@@ -3,7 +3,7 @@ import { ChromePicker } from "react-color";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPalette, faTrash } from "@fortawesome/free-solid-svg-icons";
 
-import "./ColorPaletteColor.css";
+import "./ColorPaletteColor.scss";
 
 export default function ColorPaletteColor(props) {
   const {

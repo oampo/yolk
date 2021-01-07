@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./Chart.css";
+import "./Chart.scss";
 
 const SELECTION_BORDER_STYLE = "3px dashed black";
 

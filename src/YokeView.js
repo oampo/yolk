@@ -1,5 +1,5 @@
 import React from "react";
-import "./YokeView.css";
+import "./YokeView.scss";
 
 // Middle quarter of the yoke is blank
 const START_RADIUS = 0.25;

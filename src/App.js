@@ -6,7 +6,7 @@ import Settings from "./Settings";
 import Toolbar from "./Toolbar";
 import YokeView from "./YokeView";
 import * as history from "./history";
-import "./App.css";
+import "./App.scss";
 
 export default function App(props) {
   const [colors, setColors] = useState({ 0: "#e0e0e0", 1: "#f4eda1" });

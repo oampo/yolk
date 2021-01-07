@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import ColorPaletteColor from "./ColorPaletteColor";
-import "./ColorPalette.css";
+import "./ColorPalette.scss";
 
 export default function ColorPalette(props) {
   const {

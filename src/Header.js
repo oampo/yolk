@@ -1,8 +1,8 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCogs, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCogs/*, faSignInAlt*/ } from "@fortawesome/free-solid-svg-icons";
 import logo from './images/logo.svg';
-import "./Header.css";
+import "./Header.scss";
 
 export default function Header(props) {
   const { toggleSettings } = props;
@@ -17,12 +17,14 @@ export default function Header(props) {
               <FontAwesomeIcon name="settings" icon={faCogs} />
             </button>
           </li>
+          {/*
           <li className="main-nav-list-item">
             <button>
               <FontAwesomeIcon icon={faSignInAlt} />
               Log in to save
             </button>
           </li>
+          */}
         </ul>
       </nav>
     </header>

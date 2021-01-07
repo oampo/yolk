@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import "./Settings.css";
+import "./Settings.scss";
 
 export default function Settings(props) {
   const { setSize, setNumRepeats, setDirection, chart, numRepeats, isOpen, direction } = props;
