@@ -21,11 +21,11 @@ $buttonSize: 75px;
   font-size: 30px;
 }
 
-.toolbar-copy-paste {
+.toolbar-row {
     display: flex;
 }
 
-.toolbar-copy-button, .toolbar-paste-button {
+.toolbar-button-small {
     width: $buttonSize / 2;
     height: $buttonSize / 2;
 

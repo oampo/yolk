@@ -390,6 +390,10 @@ export default function App(props) {
             setTool={setTool}
             copy={copy}
             paste={paste}
+            undo={undo}
+            redo={redo}
+            canUndo={undoHistory.position !== 0}
+            canRedo={undoHistory.position !== undoHistory.array.length}
             flip={flip}
           />
           <ColorPalette
