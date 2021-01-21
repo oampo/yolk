@@ -1,9 +1,8 @@
-<h1>
+<h1 align="center">
   <img
     src="https://raw.githubusercontent.com/oampo/yolk/master/src/images/logo.svg"
-    width="128"
-    height="128"
-    style="float:left;"
+    width="64px"
+    height="64px"
     alt="Yolk logo">
-  Yolk
+    Yolk
 </h1>
