@@ -20,7 +20,7 @@ Yolk is a web app for designing round yoked knitting patterns.
 
 ## Tech
 
-Yolk is built using React. The Yolk rendering is 
+Yolk is built using React. The yoke rendering is achieved by dynamically creating SVGs.
 
 ## Develop Yolk
 
