@@ -202,6 +202,8 @@ export default function Chart(props) {
             className="chart-stitch chart-stitch-ignore"
             data-row={rowIndex}
             data-column={columnIndex}
+            role="cell"
+            name="chart-stitch"
             onMouseDown={(e) => handleMouseDown(e, rowIndex, columnIndex)}
             onTouchStart={(e) => handleMouseDown(e, rowIndex, columnIndex)}
             onMouseOver={(e) => handleMouseOver(e, rowIndex, columnIndex)}
@@ -214,7 +216,9 @@ export default function Chart(props) {
       return (
         <div
           key={columnIndex}
+          role="cell"
           className="chart-stitch"
+          name="chart-stitch"
           style={style}
           data-row={rowIndex}
           data-column={columnIndex}
@@ -226,13 +230,18 @@ export default function Chart(props) {
     });
 
     return (
-      <div className="chart-row" key={rowIndex}>
+      <div className="chart-row" name="chart-row" role="row" key={rowIndex}>
         {stitches}
         <div className="chart-row-index">{chart.length - rowIndex}</div>
       </div>
     );
   });
   return (
-    <div className={"chart " + (visible ? "" : "chart-hidden")}>{rows}</div>
+    <section
+      className={"chart " + (visible ? "" : "chart-hidden")}
+      title="chart"
+    >
+      {rows}
+    </section>
   );
 }

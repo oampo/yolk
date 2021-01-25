@@ -27,6 +27,8 @@ export default function App(props) {
 
   const setSize = useCallback(
     (rows, columns, addToHistory = true) => {
+      rows = Math.max(rows, 2);
+      columns = Math.max(columns, 2);
       const newChart = [];
       for (let i = 0; i < rows; i++) {
         newChart.push([]);

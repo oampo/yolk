@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "@testing-library/react": "^11.2.3",
     "react-scripts": "4.0.1"
   },
   "dependencies": {
