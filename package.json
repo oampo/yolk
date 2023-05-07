@@ -4,7 +4,7 @@
   "private": true,
   "devDependencies": {
     "@testing-library/react": "^11.2.3",
-    "react-scripts": "4.0.1"
+    "react-scripts": "5.0.1"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
